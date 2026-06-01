@@ -3,7 +3,7 @@
 # 💳 Detecção de Fraudes em Cartões de Crédito com XGBoost + SHAP
 
 Este projeto foi desenvolvido em Python utilizando Google Colab e Jupyter Notebook.  
- [Abrir no Google Colab](https://colab.research.google.com/github/Rogerio5/credit-card-fraud-detection/blob/main/SEU_NOTEBOOK.ipynb) 
+ [Abrir no Google Colab](https://colab.research.google.com/github/Rogerio5/credit-card-fraud-detection/blob/main/Detector_Fraudes_Transacoes.ipynb) 
 
  ---
 

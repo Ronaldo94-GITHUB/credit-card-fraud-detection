@@ -1,1 +1,1 @@
-# Detec-o-de-Fraudes-em-Cart-es-de-Cr-dito
+# credit-card-fraud-detection

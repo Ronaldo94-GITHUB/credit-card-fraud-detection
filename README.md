@@ -7,7 +7,7 @@ Este projeto foi desenvolvido em Python utilizando Google Colab e Jupyter Notebo
 
  ---
 
-![Capa do Projeto](shap-analysis.png)
+![Capa do Projeto](shap-analysis.png.png)
 
 ---
 

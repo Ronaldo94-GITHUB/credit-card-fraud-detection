@@ -115,6 +115,12 @@ Matplotlib & Seaborn
 
 ---
 
+## 👨‍💻 Desenvolvedor / Developer
+
+- [Rogerio](https://github.com/Rogerio5)
+
+---
+
 ## 📜 Licença / License
 
 Este projeto está sob licença MIT. Para mais detalhes, veja o arquivo LICENSE.

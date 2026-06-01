@@ -3,7 +3,7 @@
 # 💳 Detecção de Fraudes em Cartões de Crédito com XGBoost + SHAP
 
 Este projeto foi desenvolvido em Python utilizando Google Colab e Jupyter Notebook.  
- [Abrir no Google Colab](https://colab.research.google.com/github/Rogerio5/SEU_REPOSITORIO_AQUI/blob/main/SEU_NOTEBOOK.ipynb) 
+ [Abrir no Google Colab](https://colab.research.google.com/github/Rogerio5/credit-card-fraud-detection/blob/main/SEU_NOTEBOOK.ipynb) 
 
  ---
 
@@ -14,10 +14,10 @@ Este projeto foi desenvolvido em Python utilizando Google Colab e Jupyter Notebo
 ## 🏅 Badges
 
 - 📦 Tamanho do repositório / Repository Size:  
-  ![GitHub repo size](https://img.shields.io/github/repo-size/Rogerio5/NOME_DO_REPO)
+  ![GitHub repo size](https://img.shields.io/github/repo-size/Rogerio5/credit-card-fraud-detection)
 
 - 📄 Licença do projeto / Project License:  
-  ![GitHub license](https://img.shields.io/github/license/Rogerio5/NOME_DO_REPO)
+  ![GitHub license](https://img.shields.io/github/license/Rogerio5/credit-card-fraud-detection)
 
 - 📊 AUC do modelo / Model AUC:  
   ![AUC](https://img.shields.io/badge/AUC-97%25-brightgreen)

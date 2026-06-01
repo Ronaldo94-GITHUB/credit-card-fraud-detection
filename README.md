@@ -85,10 +85,10 @@ Trata-se de um conjunto de dados altamente desbalanceado, onde as fraudes repres
 
 ```bash
 # Clone o repositório
-git clone [https://github.com/Rogerio5/SEU_REPOSITORIO.git](https://github.com/Rogerio5/SEU_REPOSITORIO.git)
+git clone [https://github.com/Rogerio5/credit-card-fraud-detection.git](https://github.com/Rogerio5/credit-card-fraud-detection.git)
 
 # Acesse a pasta do projeto
-cd SEU_REPOSITORIO
+cd credit-card-fraud-detection
 
 # Instale as dependências necessárias
 pip install -r requirements.txt

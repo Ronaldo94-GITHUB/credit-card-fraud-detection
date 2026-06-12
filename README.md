@@ -117,10 +117,10 @@ Matplotlib & Seaborn
 
 ---
 
-## 👨‍💻 Desenvolvedor / Developer
+## 👨‍💻 Desenvolvedores
 
 - [Rogerio](https://github.com/Rogerio5)
-
+- [Rogerio](https://github.com/Ronaldo94-GITHUB)
 ---
 
 ## 📜 Licença / License

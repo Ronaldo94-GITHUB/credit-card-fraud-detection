@@ -1,0 +1,51 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testes
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Modelos treinados
+models/*.joblib
+models/*.pkl
+models/*.json
+models/*.ubj
+
+# Dataset local
+data/*.csv
+data/*.parquet
+data/*.zip
+
+# Logs
+*.log
+logs/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Segredos
+.env
+.env.*
+!.env.example

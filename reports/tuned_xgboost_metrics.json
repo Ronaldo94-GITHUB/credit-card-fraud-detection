@@ -1,0 +1,29 @@
+{
+  "validation": {
+    "threshold": 0.36000000000000004,
+    "precision": 0.7625,
+    "recall": 0.8243243243243243,
+    "f1": 0.7922077922077922,
+    "f2": 0.8111702127659575,
+    "roc_auc": 0.9775488786321904,
+    "average_precision": 0.8275623186639901,
+    "true_negative": 42628,
+    "false_positive": 19,
+    "false_negative": 13,
+    "true_positive": 61
+  },
+  "test": {
+    "threshold": 0.36000000000000004,
+    "precision": 0.8051948051948052,
+    "recall": 0.8378378378378378,
+    "f1": 0.8211920529801324,
+    "f2": 0.8310991957104558,
+    "roc_auc": 0.9669174309368456,
+    "average_precision": 0.83295594055863,
+    "true_negative": 42633,
+    "false_positive": 15,
+    "false_negative": 12,
+    "true_positive": 62
+  },
+  "validation_f2": 0.8111702127659575
+}

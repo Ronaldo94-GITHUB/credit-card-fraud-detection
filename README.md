@@ -1,136 +1,114 @@
-# credit-card-fraud-detection
+# Credit Card Fraud Detection
 
-# 💳 Detecção de Fraudes em Cartões de Crédito com XGBoost + SHAP
+Sistema de deteccao de fraudes em transacoes de cartao de credito utilizando Machine Learning, XGBoost, Explainable AI com SHAP e API REST com FastAPI.
 
-Este projeto foi desenvolvido em Python utilizando Google Colab e Jupyter Notebook.  
- [Abrir no Google Colab](https://colab.research.google.com/github/Rogerio5/credit-card-fraud-detection/blob/main/Detector_Fraudes_Transacoes.ipynb) 
+## Resultados do modelo final
 
- ---
+| Metrica | Resultado |
+|---|---:|
+| Precision | 0.8052 |
+| Recall | 0.8378 |
+| F1-score | 0.8212 |
+| F2-score | 0.8311 |
+| ROC-AUC | 0.9669 |
+| Average Precision | 0.8330 |
+| Threshold | 0.36 |
 
-![Capa do Projeto](shap-analysis.png.png)
+## Matriz de confusao
 
----
+| | Previsto normal | Previsto fraude |
+|---|---:|---:|
+| Real normal | 42633 | 15 |
+| Real fraude | 12 | 62 |
 
-## 🏅 Badges
+O modelo identificou 62 fraudes corretamente e deixou de detectar 12 fraudes no conjunto final de teste.
 
-- 📦 Tamanho do repositório / Repository Size:  
-  ![GitHub repo size](https://img.shields.io/github/repo-size/Rogerio5/credit-card-fraud-detection)
+## Validacao cruzada
 
-- 📄 Licença do projeto / Project License:  
-  ![GitHub license](https://img.shields.io/github/license/Rogerio5/credit-card-fraud-detection)
+Best CV Average Precision: **0.848916**
 
-- 📊 AUC do modelo / Model AUC:  
-  ![AUC](https://img.shields.io/badge/AUC-97%25-brightgreen)
+## Melhor configuracao do XGBoost
 
----
+- subsample: 0.7
+- reg_lambda: 2.0
+- n_estimators: 200
+- min_child_weight: 5
+- max_depth: 5
+- learning_rate: 0.1
+- gamma: 0.0
+- colsample_bytree: 1.0
 
-## 📋 Índice / Table of Contents
+## Recursos
 
-- [Descrição / Description](#descrição--description)
-- [Status / Status](#status--status)
-- [Funcionalidades / Features](#funcionalidades--features)
-- [Tecnologias / Technologies](#tecnologias--technologies)
-- [Dataset / Dataset](#dataset)
-- [Execução / Run](#execução--run)
-- [Resultados e Visualizações / Results--visuals](#resultados-e-visualizações--results--visuals)
-- [Desenvolvedor / Developer](#desenvolvedor--developer)
-- [Licença / License](#licença--license)
-- [Conclusão / Conclusion](#conclusão--conclusion)
+- Logistic Regression
+- Random Forest
+- XGBoost
+- RandomizedSearchCV
+- Train / Validation / Test estratificados
+- Threshold otimizado com F2
+- ROC-AUC
+- Average Precision / PR-AUC
+- SHAP
+- FastAPI
+- Pytest
+- Docker
+- GitHub Actions
 
----
+## Estrutura
 
-## 📖 Descrição / Description
-
-**PT:** Este projeto foca em um dos maiores desafios de Machine Learning no setor financeiro: **Problemas de Classificação Desbalanceada**. O modelo identifica transações fraudulentas em cartões de crédito utilizando **XGBoost**.  
-Inclui:
-- **Técnicas de Reamostragem (SMOTE)** para lidar com o desbalanceamento.
-- **Ajuste de Hiperparâmetros (GridSearchCV)** para otimização de métricas focadas em Recall.
-- **SHAP (Shapley Additive exPlanations)** para interpretar e explicar as previsões do modelo.
-
-**EN:** This project focuses on one of the biggest Machine Learning challenges in the financial sector: **Imbalanced Classification Problems**. The model identifies fraudulent credit card transactions using **XGBoost**.  
-Includes:
-- **Resampling Techniques (SMOTE)** to handle data imbalance.
-- **Hyperparameter Tuning (GridSearchCV)** to optimize Recall-focused metrics.
-- **SHAP (Shapley Additive exPlanations)** to interpret and explain the model's predictions.
-
----
-
-## 🚧 Status / Status
-
-✅ **Concluído e pronto para uso** / **Completed and ready to use**
-
----
-
-## ⚙️ Funcionalidades / Features
-
-| 🧩 Funcionalidade (PT)                  | 💡 Description (EN)                                |
-|-----------------------------------------|----------------------------------------------------|
-| ⚖️ Tratamento de Dados Desbalanceados | ⚖️ Handling Imbalanced Data (Undersampling/SMOTE) |
-| 📈 Análise de Curvas ROC e P-R          | 📈 ROC and Precision-Recall Curve Analysis        |
-| 🚀 Modelagem Avançada com XGBoost       | 🚀 Advanced Modeling with XGBoost                 |
-| 🎯 Otimização com GridSearchCV          | 🎯 Hyperparameter Optimization via GridSearchCV   |
-| 🔥 Explicabilidade com SHAP             | 🔥 Model Explainability using SHAP values         |
-| 📊 Métricas de Avaliação Focadas        | 📊 Focused Evaluation Metrics (Recall, F1-Score)  |
-
----
-
-## 📥 Dataset
-
-O dataset utilizado contém transações de cartões de crédito (`creditcard.csv`).  
-Trata-se de um conjunto de dados altamente desbalanceado, onde as fraudes representam uma fração minúscula do total de transações. Ele geralmente pode ser encontrado em plataformas como o Kaggle.
-
----
-
-## ▶️ Execução / Run
-
-```bash
-# Clone o repositório
-git clone [https://github.com/Rogerio5/credit-card-fraud-detection.git](https://github.com/Rogerio5/credit-card-fraud-detection.git)
-
-# Acesse a pasta do projeto
-cd credit-card-fraud-detection
-
-# Instale as dependências necessárias
-pip install -r requirements.txt
-
-# Execute o notebook no Jupyter
-jupyter notebook Detector_Fraudes_Transacoes.ipynb
+```text
+data -> preprocessing -> train/validation/test -> modelos -> tuning -> threshold -> avaliacao -> SHAP -> FastAPI
 ```
 
----
+## Instalacao
 
-## 🧰 Tecnologias / Technologies
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
 
-Python 3.10+
+## Testes
 
-Pandas & NumPy
+```powershell
+python -m pytest -q
+```
 
-Scikit-Learn
+## Treinamento
 
-Imbalanced-Learn (SMOTE)
+```powershell
+python -m src.train
+```
 
-XGBoost
+## Tuning do XGBoost
 
-SHAP
+```powershell
+python -m src.tune_xgboost
+```
 
-Matplotlib & Seaborn
+## API
 
----
+```powershell
+uvicorn src.api:app --reload
+```
 
-## 👨‍💻 Desenvolvedores
+Swagger:
 
-- [Rogerio](https://github.com/Rogerio5)
-- [Rogerio](https://github.com/Ronaldo94-GITHUB)
----
+```text
+http://127.0.0.1:8000/docs
+```
 
-## 📜 Licença / License
+### Endpoints
 
-Este projeto está sob licença MIT. Para mais detalhes, veja o arquivo LICENSE.
+- GET /
+- GET /health
+- GET /model-info
+- POST /predict
 
-This project is under the MIT license. For more details, see the LICENSE file.
+## Tecnologias
 
----
+Python, Pandas, NumPy, Scikit-learn, XGBoost, SHAP, FastAPI, Uvicorn, Pytest, Joblib e Docker.
 
-## 🏁 Conclusão / Conclusion
+## Autor
 
-Um projeto de Ciência de Dados robusto que demonstra não apenas a capacidade de criar modelos preditivos de alta precisão em cenários adversos (dados desbalanceados), mas também a importância da explicabilidade no setor financeiro, garantindo que as decisões do algoritmo sejam transparentes e justificáveis.
+Rogério Augusto Sabino

@@ -1,0 +1,13 @@
+{
+  "trained_at_utc": "2026-08-12T17:14:53.438759+00:00",
+  "dataset_rows": 284807,
+  "fraud_transactions": 492,
+  "normal_transactions": 284315,
+  "train_rows": 199364,
+  "validation_rows": 42721,
+  "test_rows": 42722,
+  "scale_pos_weight": 578.546511627907,
+  "best_model": "random_forest",
+  "best_threshold": 0.4600000000000001,
+  "selection_metric": "average_precision"
+}

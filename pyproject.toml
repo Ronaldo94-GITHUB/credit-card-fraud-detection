@@ -1,0 +1,28 @@
+[project]
+name = "credit-card-fraud-detection"
+version = "0.2.0"
+description = "Sistema de deteccao de fraudes em cartoes de credito com Machine Learning, XGBoost, SHAP e FastAPI."
+requires-python = ">=3.11"
+
+dependencies = [
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "imbalanced-learn",
+    "xgboost",
+    "shap",
+    "matplotlib",
+    "joblib",
+    "fastapi",
+    "uvicorn",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "httpx",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

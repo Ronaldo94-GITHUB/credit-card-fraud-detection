@@ -1,0 +1,23 @@
+{
+  "trained_at_utc": "2026-08-12T17:18:40.367887+00:00",
+  "algorithm": "XGBoost",
+  "model_name": "tuned_xgboost",
+  "training_rows": 199364,
+  "validation_rows": 42721,
+  "test_rows": 42722,
+  "scale_pos_weight": 578.546511627907,
+  "best_cv_average_precision": 0.8489160165284014,
+  "best_parameters": {
+    "subsample": 0.7,
+    "reg_lambda": 2.0,
+    "n_estimators": 200,
+    "min_child_weight": 5,
+    "max_depth": 5,
+    "learning_rate": 0.1,
+    "gamma": 0.0,
+    "colsample_bytree": 1.0
+  },
+  "threshold": 0.36000000000000004,
+  "selection_metric": "average_precision",
+  "threshold_metric": "F2"
+}

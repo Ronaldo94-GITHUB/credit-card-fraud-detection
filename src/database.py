@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 import os
@@ -397,3 +397,119 @@ def database_status() -> dict[str, Any]:
             ),
             "error": str(exc),
         }
+
+
+
+def get_events_since(
+    hours: int,
+    limit: int = 5000,
+) -> list[dict[str, Any]]:
+    from datetime import timedelta
+
+    hours = max(1, int(hours))
+    limit = max(
+        1,
+        min(int(limit), 10000),
+    )
+
+    cutoff = datetime.now(
+        timezone.utc
+    ) - timedelta(hours=hours)
+
+    with get_connection() as conn:
+        cursor = conn.cursor()
+
+        if is_postgres():
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    created_at,
+                    fraud_probability,
+                    fraud_prediction,
+                    features_json
+                FROM inference_events
+                WHERE created_at >= %s
+                ORDER BY created_at DESC
+                LIMIT %s
+                """,
+                (cutoff, limit),
+            )
+        else:
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    created_at,
+                    fraud_probability,
+                    fraud_prediction,
+                    features_json
+                FROM inference_events
+                WHERE created_at >= ?
+                ORDER BY created_at DESC
+                LIMIT ?
+                """,
+                (
+                    cutoff.isoformat(),
+                    limit,
+                ),
+            )
+
+        rows = cursor.fetchall()
+
+    columns = [
+        "id",
+        "created_at",
+        "fraud_probability",
+        "fraud_prediction",
+        "features_json",
+    ]
+
+    result = []
+
+    for row in rows:
+        if hasattr(row, "keys"):
+            item = {
+                name: row[name]
+                for name in columns
+            }
+        else:
+            item = dict(
+                zip(columns, row)
+            )
+
+        raw_features = item[
+            "features_json"
+        ]
+
+        if isinstance(
+            raw_features,
+            dict,
+        ):
+            features = raw_features
+        else:
+            features = json.loads(
+                str(raw_features)
+            )
+
+        result.append(
+            {
+                "id": int(item["id"]),
+                "created_at": str(
+                    item["created_at"]
+                ),
+                "fraud_probability": float(
+                    item[
+                        "fraud_probability"
+                    ]
+                ),
+                "fraud_prediction": int(
+                    item[
+                        "fraud_prediction"
+                    ]
+                ),
+                "features": features,
+            }
+        )
+
+    return result

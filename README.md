@@ -316,3 +316,41 @@ operacional simples baseado na janela
 recente de inferencias. Ele nao substitui
 uma analise estatistica completa de
 data drift.
+
+
+## Drift Estatistico
+
+O projeto possui um baseline estatistico
+versionado em:
+
+`reports/drift_baseline.json`
+
+O monitor compara a distribuicao de
+referencia com inferencias persistidas
+em producao usando:
+
+- Population Stability Index (PSI);
+- estatistica KS;
+- Amount;
+- V1-V28;
+- probabilidade de fraude.
+
+Janelas disponiveis:
+
+- 24 horas;
+- 7 dias;
+- 30 dias.
+
+Endpoint:
+
+`GET /drift/statistical?period=7d`
+
+Estados possiveis:
+
+- stable;
+- warning;
+- critical;
+- insufficient_data.
+
+Sao necessarias pelo menos 30 inferencias
+no periodo para o calculo estatistico.

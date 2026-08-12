@@ -10,6 +10,8 @@ import type {
 
 import "./App.css"
 
+import { StatisticalDriftPanel } from "./StatisticalDriftPanel"
+
 import { PersistentMlopsPanel } from "./PersistentMlopsPanel"
 
 import { OperationsPanel } from "./OperationsPanel"
@@ -702,6 +704,8 @@ function App() {
 
 
       <PersistentMlopsPanel />
+
+      <StatisticalDriftPanel />
 
       <section
         className="insights-section"

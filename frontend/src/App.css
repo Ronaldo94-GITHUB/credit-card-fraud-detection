@@ -955,3 +955,137 @@ footer a {
     grid-template-columns: 1fr;
   }
 }
+
+
+.statistical-drift-panel {
+  margin-top: 18px;
+  padding: 28px;
+  border: 1px solid #192d4a;
+  border-radius: 20px;
+  background:
+    rgba(11, 23, 40, 0.94);
+}
+
+.drift-heading-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.period-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.period-button {
+  padding: 9px 13px;
+  border: 1px solid #29456e;
+  border-radius: 10px;
+  color: #9fb8e9;
+  background: #0c192b;
+}
+
+.period-button.active {
+  color: white;
+  border-color: #5d8fff;
+  background: #315fca;
+}
+
+.statistical-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(7, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.statistical-grid article {
+  padding: 17px;
+  border: 1px solid #213757;
+  border-radius: 14px;
+  background: #0b1627;
+}
+
+.statistical-grid span,
+.statistical-grid strong {
+  display: block;
+}
+
+.statistical-grid span {
+  margin-bottom: 7px;
+  color: #7e90aa;
+  font-size: 0.75rem;
+}
+
+.statistical-grid strong {
+  font-size: 1.05rem;
+}
+
+.insufficient-banner {
+  margin-top: 15px;
+  padding: 15px 17px;
+  border: 1px solid
+    rgba(93, 143, 255, 0.30);
+  border-radius: 12px;
+  color: #a9bce0;
+  background:
+    rgba(46, 89, 180, 0.10);
+}
+
+.drift-table-wrap {
+  width: 100%;
+  margin-top: 18px;
+  overflow-x: auto;
+}
+
+.drift-badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 0.73rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.drift-badge.stable {
+  color: #8ce9c1;
+  background:
+    rgba(33, 141, 97, 0.18);
+}
+
+.drift-badge.warning {
+  color: #ffc47b;
+  background:
+    rgba(169, 102, 27, 0.20);
+}
+
+.drift-badge.critical {
+  color: #ff9ca7;
+  background:
+    rgba(170, 48, 59, 0.20);
+}
+
+@media (max-width: 1100px) {
+  .statistical-grid {
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .drift-heading-row {
+    flex-direction: column;
+  }
+
+  .statistical-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .statistical-grid {
+    grid-template-columns: 1fr;
+  }
+}

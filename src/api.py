@@ -1,4 +1,4 @@
-﻿from time import perf_counter
+from time import perf_counter
 from typing import Annotated
 
 import pandas as pd
@@ -19,6 +19,11 @@ from src.database import save_inference_event
 from src.drift import calculate_drift_status
 
 from src.metrics import inference_metrics
+
+from src.statistical_drift import (
+    analyze_statistical_drift,
+)
+
 
 from src.predict import load_model_bundle
 from src.predict import predict_dataframe
@@ -249,6 +254,23 @@ def inference_history(
 @app.get("/drift")
 def drift():
     return calculate_drift_status()
+
+
+
+@app.get("/drift/statistical")
+def statistical_drift(
+    period: str = "7d",
+):
+    try:
+        return analyze_statistical_drift(
+            period=period
+        )
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
 
 
 @app.post(

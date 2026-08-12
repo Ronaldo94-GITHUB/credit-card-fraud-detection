@@ -1,27 +1,39 @@
 # Credit Card Fraud Detection
 
-Sistema de deteccao de fraudes em transacoes de cartao de credito utilizando Machine Learning, XGBoost, Explainable AI com SHAP e API REST com FastAPI.
+Sistema de deteccao de fraudes em transacoes de cartao de credito utilizando Machine Learning, XGBoost, Explainable AI com SHAP, FastAPI, Docker e CI.
 
-## Resultados do modelo final
+## Live Demo
+
+API online: https://credit-card-fraud-detection-v5li.onrender.com
+
+Swagger: https://credit-card-fraud-detection-v5li.onrender.com/docs
+
+Health Check: https://credit-card-fraud-detection-v5li.onrender.com/health
+
+Model Info: https://credit-card-fraud-detection-v5li.onrender.com/model-info
+
+## Resultado do modelo final
+
+O modelo final foi um XGBoost otimizado com RandomizedSearchCV e threshold ajustado no conjunto de validacao.
 
 | Metrica | Resultado |
 |---|---:|
-| Precision | 0.8052 |
-| Recall | 0.8378 |
-| F1-score | 0.8212 |
-| F2-score | 0.8311 |
-| ROC-AUC | 0.9669 |
-| Average Precision | 0.8330 |
+| Precision | 80.52% |
+| Recall | 83.78% |
+| F1-score | 82.12% |
+| F2-score | 83.11% |
+| ROC-AUC | 96.69% |
+| Average Precision / PR-AUC | 83.30% |
 | Threshold | 0.36 |
 
-## Matriz de confusao
+### Matriz de confusao
 
 | | Previsto normal | Previsto fraude |
 |---|---:|---:|
 | Real normal | 42633 | 15 |
 | Real fraude | 12 | 62 |
 
-O modelo identificou 62 fraudes corretamente e deixou de detectar 12 fraudes no conjunto final de teste.
+O modelo detectou 62 fraudes corretamente, com 15 falsos positivos e 12 falsos negativos no conjunto final de teste.
 
 ## Validacao cruzada
 
@@ -38,29 +50,142 @@ Best CV Average Precision: **0.848916**
 - gamma: 0.0
 - colsample_bytree: 1.0
 
-## Recursos
-
-- Logistic Regression
-- Random Forest
-- XGBoost
-- RandomizedSearchCV
-- Train / Validation / Test estratificados
-- Threshold otimizado com F2
-- ROC-AUC
-- Average Precision / PR-AUC
-- SHAP
-- FastAPI
-- Pytest
-- Docker
-- GitHub Actions
-
-## Estrutura
+## Arquitetura
 
 ```text
-data -> preprocessing -> train/validation/test -> modelos -> tuning -> threshold -> avaliacao -> SHAP -> FastAPI
+Dataset
+  |
+  v
+Validacao dos dados
+  |
+  v
+Feature Engineering
+  |
+  v
+Train / Validation / Test
+  |
+  +-------------------------------+
+  |                               |
+  v                               v
+Baselines                     XGBoost
+Logistic Regression              |
+Random Forest                    v
+                           RandomizedSearchCV
+                                  |
+                                  v
+                           Melhor configuracao
+                                  |
+                                  v
+                        Threshold otimizado
+                                  |
+                                  v
+                             Teste final
+                                  |
+                    +-------------+-------------+
+                    |                           |
+                    v                           v
+                 Metricas                      SHAP
+                    |                           |
+                    +-------------+-------------+
+                                  |
+                                  v
+                           Modelo persistido
+                                  |
+                                  v
+                              FastAPI
+                                  |
+                                  v
+                             Render Cloud
 ```
 
-## Instalacao
+## Explainable AI
+
+O projeto utiliza SHAP para analisar a importancia das variaveis e aumentar a interpretabilidade das decisoes do modelo.
+
+### SHAP
+
+![SHAP](reports/figures/shap_tuned_xgboost.png)
+
+### Matriz de confusao
+
+![Confusion Matrix](reports/figures/confusion_matrix_tuned_xgboost.png)
+
+### Precision-Recall Curve
+
+![Precision Recall](reports/figures/precision_recall_tuned_xgboost.png)
+
+### ROC Curve
+
+![ROC Curve](reports/figures/roc_curve_tuned_xgboost.png)
+
+## Endpoints
+
+### GET /
+
+Retorna o status basico da API.
+
+### GET /health
+
+Valida se o servico esta online e se o modelo esta disponivel.
+
+### GET /model-info
+
+Retorna informacoes do modelo em producao.
+
+### POST /predict
+
+Recebe os dados de uma transacao e retorna:
+
+```json
+{
+  "fraud_probability": 0.87,
+  "fraud_prediction": 1,
+  "risk_label": "suspeita",
+  "model_name": "tuned_xgboost",
+  "threshold": 0.36
+}
+```
+
+## Como testar online
+
+Abra:
+
+https://credit-card-fraud-detection-v5li.onrender.com/docs
+
+No Swagger, utilize o endpoint POST /predict.
+
+## Estrutura do projeto
+
+```text
+credit-card-fraud-detection/
+|
+|-- assets/
+|-- data/
+|-- docs/
+|-- models/
+|-- notebooks/
+|-- reports/
+|   `-- figures/
+|-- src/
+|   |-- api.py
+|   |-- config.py
+|   |-- data_loader.py
+|   |-- evaluate.py
+|   |-- explain.py
+|   |-- explain_tuned.py
+|   |-- generate_reports.py
+|   |-- predict.py
+|   |-- preprocessing.py
+|   |-- train.py
+|   `-- tune_xgboost.py
+|-- tests/
+|-- Dockerfile
+|-- pyproject.toml
+|-- requirements.txt
+`-- README.md
+```
+
+## Execucao local
 
 ```powershell
 python -m venv .venv
@@ -68,46 +193,45 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-## Testes
+### Testes
 
 ```powershell
 python -m pytest -q
 ```
 
-## Treinamento
+### Treinamento
 
 ```powershell
 python -m src.train
 ```
 
-## Tuning do XGBoost
+### Tuning
 
 ```powershell
 python -m src.tune_xgboost
 ```
 
-## API
+### API
 
 ```powershell
 uvicorn src.api:app --reload
 ```
 
-Swagger:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-### Endpoints
-
-- GET /
-- GET /health
-- GET /model-info
-- POST /predict
-
 ## Tecnologias
 
-Python, Pandas, NumPy, Scikit-learn, XGBoost, SHAP, FastAPI, Uvicorn, Pytest, Joblib e Docker.
+- Python
+- Pandas
+- NumPy
+- Scikit-learn
+- XGBoost
+- SHAP
+- FastAPI
+- Uvicorn
+- Pytest
+- Joblib
+- Docker
+- GitHub Actions
+- Render
 
 ## Autor
 

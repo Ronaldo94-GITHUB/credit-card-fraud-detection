@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import os
 import secrets
 import time
@@ -204,12 +205,28 @@ def require_admin_api_key(
 
 
 def security_status() -> dict:
+    admin_key = os.getenv(
+        ADMIN_API_KEY_ENV,
+        "",
+    ).strip()
+
+    fingerprint = (
+        hashlib.sha256(
+            admin_key.encode("utf-8")
+        ).hexdigest()[:12]
+        if admin_key
+        else None
+    )
+
     return {
         "admin_api_key_configured": bool(
-            os.getenv(
-                ADMIN_API_KEY_ENV,
-                "",
-            ).strip()
+            admin_key
+        ),
+        "admin_api_key_length": len(
+            admin_key
+        ),
+        "admin_api_key_fingerprint": (
+            fingerprint
         ),
         "predict_rate_limit_requests": (
             RATE_LIMIT_REQUESTS

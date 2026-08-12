@@ -1,4 +1,4 @@
-﻿# Python
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
@@ -53,3 +53,4 @@ Thumbs.db
 # Modelo de producao
 !models/tuned_xgboost_model.joblib
 data/runtime_metrics.db
+.phase14_admin_key.txt

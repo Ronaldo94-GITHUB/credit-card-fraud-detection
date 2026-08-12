@@ -53,9 +53,30 @@ def test_metrics_endpoint():
     )
 
 
-def test_metrics_reset():
-    response = client.post(
+def test_metrics_reset(
+    monkeypatch,
+):
+    monkeypatch.setenv(
+        "ADMIN_API_KEY",
+        "test-admin-key",
+    )
+
+    unauthorized = client.post(
         "/metrics/reset"
+    )
+
+    assert (
+        unauthorized.status_code
+        == 401
+    )
+
+    response = client.post(
+        "/metrics/reset",
+        headers={
+            "X-Admin-API-Key": (
+                "test-admin-key"
+            )
+        },
     )
 
     assert response.status_code == 200

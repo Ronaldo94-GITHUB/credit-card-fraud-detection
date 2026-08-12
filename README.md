@@ -401,3 +401,53 @@ Severidades:
 Os alertas sao indicadores operacionais
 e devem ser calibrados para o ambiente
 financeiro real.
+
+
+## Seguran?a e Governan?a
+
+A API possui uma camada de governan?a
+para opera??o em produ??o.
+
+Recursos:
+
+- Request ID por requisi??o;
+- header `X-Request-ID`;
+- logs estruturados;
+- rate limiting em `/predict`;
+- API key administrativa;
+- auditoria persistente;
+- prote??o de opera??es administrativas.
+
+Endpoint:
+
+`GET /security/status`
+
+Endpoints administrativos protegidos:
+
+- `POST /metrics/reset`
+- `GET /admin/audit`
+
+Header administrativo:
+
+`X-Admin-API-Key`
+
+A chave deve ser definida apenas como
+vari?vel de ambiente `ADMIN_API_KEY`.
+Ela n?o deve ser armazenada no GitHub.
+
+Rate limiting padr?o:
+
+- 60 requisi??es;
+- janela de 60 segundos;
+- aplicado ao endpoint `/predict`.
+
+Vari?veis opcionais:
+
+- `PREDICT_RATE_LIMIT_REQUESTS`
+- `PREDICT_RATE_LIMIT_WINDOW_SECONDS`
+
+O rate limiting atual e mantido em memoria
+por instancia. Para uma arquitetura
+distribuida com varias replicas, a camada
+pode evoluir para Redis ou outro armazenamento
+compartilhado.

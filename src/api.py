@@ -1,51 +1,98 @@
+from __future__ import annotations
+
+import logging
 from time import perf_counter
 from typing import Annotated
 
 import pandas as pd
 
+from fastapi import Depends
 from fastapi import FastAPI
 from fastapi import HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Request
+
+from fastapi.middleware.cors import (
+    CORSMiddleware,
+)
 
 from pydantic import BaseModel
 from pydantic import Field
 
-from src.database import database_status
-from src.database import get_persistent_metrics
-from src.database import get_recent_events
-from src.database import initialize_database
-from src.database import save_inference_event
-
-from src.drift import calculate_drift_status
-
-from src.metrics import inference_metrics
-
-from src.statistical_drift import (
-    analyze_statistical_drift,
+from src.audit import (
+    get_recent_audit_events,
+    initialize_audit_table,
+    save_audit_event,
 )
 
+from src.database import (
+    database_status,
+    get_persistent_metrics,
+    get_recent_events,
+    initialize_database,
+    save_inference_event,
+)
 
-from src.temporal_metrics import (
-    build_temporal_metrics,
+from src.drift import (
+    calculate_drift_status,
+)
+
+from src.metrics import (
+    inference_metrics,
 )
 
 from src.mlops_alerts import (
     build_mlops_alerts,
 )
 
+from src.predict import (
+    load_model_bundle,
+    predict_dataframe,
+    resolve_default_model_path,
+)
 
-from src.predict import load_model_bundle
-from src.predict import predict_dataframe
-from src.predict import resolve_default_model_path
+from src.security import (
+    create_request_id,
+    get_client_key,
+    predict_rate_limiter,
+    require_admin_api_key,
+    security_status,
+)
+
+from src.statistical_drift import (
+    analyze_statistical_drift,
+)
+
+from src.temporal_metrics import (
+    build_temporal_metrics,
+)
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format=(
+        "%(asctime)s "
+        "%(levelname)s "
+        "%(name)s "
+        "%(message)s"
+    ),
+)
+
+logger = logging.getLogger(
+    "fraud_api"
+)
 
 
 app = FastAPI(
-    title="Credit Card Fraud Detection API",
-    description=(
-        "Credit card fraud detection "
-        "with XGBoost and MLOps."
+    title=(
+        "Credit Card Fraud "
+        "Detection API"
     ),
-    version="0.5.0",
+    description=(
+        "Fraud detection API with "
+        "XGBoost, PostgreSQL, "
+        "MLOps and governance."
+    ),
+    version="0.6.0",
 )
 
 
@@ -56,7 +103,11 @@ app.add_middleware(
         "http://127.0.0.1:5173",
         "http://localhost:5174",
         "http://127.0.0.1:5174",
-        "https://credit-card-fraud-detection-frontend-k6ki.onrender.com",
+        (
+            "https://credit-card-fraud-"
+            "detection-frontend-k6ki"
+            ".onrender.com"
+        ),
     ],
     allow_credentials=False,
     allow_methods=[
@@ -69,6 +120,7 @@ app.add_middleware(
 
 
 initialize_database()
+initialize_audit_table()
 
 
 class TransactionInput(BaseModel):
@@ -120,6 +172,68 @@ class PredictionResponse(BaseModel):
     threshold: float
 
 
+@app.middleware("http")
+async def governance_middleware(
+    request: Request,
+    call_next,
+):
+    request_id = (
+        request.headers.get(
+            "X-Request-ID"
+        )
+        or create_request_id()
+    )
+
+    request.state.request_id = (
+        request_id
+    )
+
+    started = perf_counter()
+
+    try:
+        response = await call_next(
+            request
+        )
+
+    except Exception:
+        logger.exception(
+            "request_failed "
+            "request_id=%s "
+            "method=%s "
+            "path=%s",
+            request_id,
+            request.method,
+            request.url.path,
+        )
+
+        raise
+
+    elapsed_ms = (
+        perf_counter()
+        - started
+    ) * 1000.0
+
+    response.headers[
+        "X-Request-ID"
+    ] = request_id
+
+    logger.info(
+        "request_completed "
+        "request_id=%s "
+        "method=%s "
+        "path=%s "
+        "status=%s "
+        "duration_ms=%.2f",
+        request_id,
+        request.method,
+        request.url.path,
+        response.status_code,
+        elapsed_ms,
+    )
+
+    return response
+
+
 @app.get("/")
 def root():
     return {
@@ -128,7 +242,7 @@ def root():
         ),
         "status": "online",
         "docs": "/docs",
-        "version": "0.5.0",
+        "version": "0.6.0",
     }
 
 
@@ -162,7 +276,9 @@ def readiness():
         if not db["available"]:
             raise HTTPException(
                 status_code=503,
-                detail="Database unavailable.",
+                detail=(
+                    "Database unavailable."
+                ),
             )
 
         return {
@@ -219,6 +335,11 @@ def model_info():
         ) from exc
 
 
+@app.get("/security/status")
+def get_security_status():
+    return security_status()
+
+
 @app.get("/metrics")
 def metrics():
     snapshot = (
@@ -232,9 +353,34 @@ def metrics():
     return snapshot
 
 
-@app.post("/metrics/reset")
-def reset_metrics():
+@app.post(
+    "/metrics/reset",
+    dependencies=[
+        Depends(
+            require_admin_api_key
+        )
+    ],
+)
+def reset_metrics(
+    request: Request,
+):
     inference_metrics.reset()
+
+    save_audit_event(
+        request_id=(
+            request.state.request_id
+        ),
+        event_type="metrics_reset",
+        endpoint="/metrics/reset",
+        method="POST",
+        status_code=200,
+        client_key=get_client_key(
+            request
+        ),
+        details=(
+            "In-memory metrics reset."
+        ),
+    )
 
     return {
         "status": "reset",
@@ -265,6 +411,20 @@ def drift():
     return calculate_drift_status()
 
 
+@app.get("/drift/statistical")
+def statistical_drift(
+    period: str = "7d",
+):
+    try:
+        return analyze_statistical_drift(
+            period=period
+        )
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
 
 
 @app.get("/metrics/timeseries")
@@ -299,29 +459,64 @@ def mlops_alerts(
         ) from exc
 
 
-@app.get("/drift/statistical")
-def statistical_drift(
-    period: str = "7d",
-):
-    try:
-        return analyze_statistical_drift(
-            period=period
+@app.get(
+    "/admin/audit",
+    dependencies=[
+        Depends(
+            require_admin_api_key
         )
+    ],
+)
+def admin_audit(
+    request: Request,
+    limit: int = 50,
+):
+    events = (
+        get_recent_audit_events(
+            limit=limit
+        )
+    )
 
-    except ValueError as exc:
-        raise HTTPException(
-            status_code=400,
-            detail=str(exc),
-        ) from exc
+    save_audit_event(
+        request_id=(
+            request.state.request_id
+        ),
+        event_type=(
+            "audit_history_access"
+        ),
+        endpoint="/admin/audit",
+        method="GET",
+        status_code=200,
+        client_key=get_client_key(
+            request
+        ),
+        details=(
+            f"Returned {len(events)} "
+            "audit events."
+        ),
+    )
+
+    return {
+        "items": events,
+    }
 
 
 @app.post(
     "/predict",
-    response_model=PredictionResponse,
+    response_model=(
+        PredictionResponse
+    ),
 )
 def predict(
+    request: Request,
     transaction: TransactionInput,
 ):
+    rate = predict_rate_limiter.check(
+        get_client_key(
+            request
+        )
+    )
+
     started = perf_counter()
 
     try:
@@ -377,14 +572,22 @@ def predict(
         ) * 1000.0
 
         inference_metrics.record(
-            probability=fraud_probability,
-            prediction=fraud_prediction,
-            latency_ms=latency_ms,
+            probability=(
+                fraud_probability
+            ),
+            prediction=(
+                fraud_prediction
+            ),
+            latency_ms=(
+                latency_ms
+            ),
         )
 
         save_inference_event(
             features=payload,
-            amount=transaction.Amount,
+            amount=(
+                transaction.Amount
+            ),
             fraud_probability=(
                 fraud_probability
             ),
@@ -395,6 +598,31 @@ def predict(
             latency_ms=latency_ms,
             model_name=model_name,
             threshold=threshold,
+        )
+
+        save_audit_event(
+            request_id=(
+                request.state.request_id
+            ),
+            event_type="prediction",
+            endpoint="/predict",
+            method="POST",
+            status_code=200,
+            client_key=(
+                get_client_key(
+                    request
+                )
+            ),
+            details=(
+                "prediction="
+                + str(
+                    fraud_prediction
+                )
+                + "; rate_remaining="
+                + str(
+                    rate["remaining"]
+                )
+            ),
         )
 
         return PredictionResponse(
@@ -409,8 +637,19 @@ def predict(
             threshold=threshold,
         )
 
+    except HTTPException:
+        raise
+
     except Exception as exc:
+        logger.exception(
+            "prediction_failed "
+            "request_id=%s",
+            request.state.request_id,
+        )
+
         raise HTTPException(
             status_code=500,
-            detail=str(exc),
+            detail=(
+                "Prediction failed."
+            ),
         ) from exc

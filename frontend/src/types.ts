@@ -46,3 +46,16 @@ export interface ModelInfo {
   best_params?: Record<string, number>
   cv_average_precision?: number
 }
+
+export interface OperationalMetrics {
+  service: string
+  uptime_seconds: number
+  total_predictions: number
+  normal_predictions: number
+  suspicious_predictions: number
+  suspicious_rate: number
+  average_probability: number
+  last_probability: number
+  average_latency_ms: number
+  last_latency_ms: number
+}

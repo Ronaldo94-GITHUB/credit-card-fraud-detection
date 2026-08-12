@@ -235,7 +235,7 @@ uvicorn src.api:app --reload
 
 ## Autor
 
-Rogério Augusto Sabino
+RogÃ©rio Augusto Sabino
 
 ## Dashboard Web
 
@@ -258,3 +258,31 @@ O dashboard permite:
 - armazenar localmente o historico das ultimas analises;
 - visualizar SHAP, ROC Curve, Precision-Recall e matriz de confusao.
 
+
+
+## Observabilidade
+
+A API possui uma camada de observabilidade em memoria para acompanhar o comportamento da instancia em producao.
+
+Endpoints:
+
+- `GET /health`
+- `GET /readiness`
+- `GET /metrics`
+- `POST /metrics/reset`
+
+As metricas incluem:
+
+- total de predicoes;
+- quantidade de transacoes normais;
+- quantidade de transacoes suspeitas;
+- taxa de classificacoes suspeitas;
+- probabilidade media;
+- ultima probabilidade;
+- latencia media;
+- ultima latencia;
+- uptime da instancia.
+
+O dashboard React apresenta parte dessas metricas em uma secao operacional de MLOps.
+
+> Os contadores sao mantidos em memoria e sao reiniciados quando a instancia da API e reiniciada.

@@ -10,9 +10,12 @@ import type {
 
 import "./App.css"
 
+import { OperationsPanel } from "./OperationsPanel"
+
 import {
   getHealth,
   getModelInfo,
+  getOperationalMetrics,
   predictTransaction,
 } from "./api"
 
@@ -23,6 +26,7 @@ import {
 
 import type {
   ModelInfo,
+  OperationalMetrics,
   PredictionResponse,
   TransactionInput,
 } from "./types"
@@ -81,6 +85,11 @@ function App() {
       null,
     )
 
+  const [operationalMetrics, setOperationalMetrics] =
+    useState<OperationalMetrics | null>(
+      null,
+    )
+
   const [loading, setLoading] =
     useState(false)
 
@@ -107,6 +116,13 @@ function App() {
           await getModelInfo()
 
         setModelInfo(model)
+
+        const operational =
+          await getOperationalMetrics()
+
+        setOperationalMetrics(
+          operational,
+        )
       } catch {
         setApiOnline(false)
       }
@@ -206,6 +222,13 @@ function App() {
       setPrediction(result)
 
       saveHistory(result)
+
+      const operational =
+        await getOperationalMetrics()
+
+      setOperationalMetrics(
+        operational,
+      )
     } catch (err) {
       setError(
         err instanceof Error
@@ -668,6 +691,12 @@ function App() {
           navegador.
         </p>
       </section>
+
+      <OperationsPanel
+        metrics={
+          operationalMetrics
+        }
+      />
 
       <section
         className="insights-section"

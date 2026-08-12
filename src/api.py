@@ -1,3 +1,5 @@
+from time import perf_counter
+
 from typing import Annotated
 
 import pandas as pd
@@ -13,6 +15,8 @@ from pydantic import (
     BaseModel,
     Field,
 )
+
+from src.metrics import inference_metrics
 
 from src.predict import (
     load_model_bundle,
@@ -156,6 +160,53 @@ def model_info():
         ) from exc
 
 
+
+
+@app.get("/readiness")
+def readiness():
+    try:
+        bundle = load_model_bundle()
+
+        return {
+            "status": "ready",
+            "model_name": bundle[
+                "model_name"
+            ],
+            "threshold": float(
+                bundle["threshold"]
+            ),
+        }
+
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=str(exc),
+        ) from exc
+
+
+@app.get("/metrics")
+def metrics():
+    snapshot = (
+        inference_metrics.snapshot()
+    )
+
+    snapshot[
+        "service"
+    ] = "credit-card-fraud-detection"
+
+    return snapshot
+
+
+@app.post("/metrics/reset")
+def reset_metrics():
+    inference_metrics.reset()
+
+    return {
+        "status": "reset",
+        "metrics": (
+            inference_metrics.snapshot()
+        ),
+    }
 @app.post(
     "/predict",
     response_model=PredictionResponse,
@@ -163,6 +214,8 @@ def model_info():
 def predict(
     transaction: TransactionInput,
 ):
+    started = perf_counter()
+
     try:
         payload = (
             transaction.model_dump()

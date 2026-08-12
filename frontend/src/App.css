@@ -1,0 +1,294 @@
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  color: #e7edf6;
+  background: #07101d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(37, 99, 235, 0.2),
+      transparent 28rem
+    ),
+    #07101d;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.page {
+  width: min(1280px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 48px 0 32px;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #7ea6ff;
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: clamp(2.2rem, 5vw, 4.2rem);
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.subtitle {
+  color: #97a6bb;
+}
+
+.status-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid #1e3150;
+  border-radius: 16px;
+  background: #0d192b;
+}
+
+.status-card small {
+  display: block;
+  color: #7e8da4;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.status-dot.online {
+  background: #3ed598;
+}
+
+.status-dot.offline {
+  background: #ff6874;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.metric,
+.panel {
+  border: 1px solid #172a46;
+  background: #0b1728;
+  border-radius: 18px;
+}
+
+.metric {
+  padding: 22px;
+}
+
+.metric span {
+  display: block;
+  color: #8495ad;
+}
+
+.metric strong {
+  font-size: 1.7rem;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 0.8fr;
+  gap: 18px;
+}
+
+.panel {
+  padding: 28px;
+}
+
+.panel-heading {
+  display: flex;
+  justify-content: space-between;
+}
+
+.main-inputs,
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.features-grid {
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 18px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: #aab8ca;
+}
+
+input {
+  padding: 11px 12px;
+  color: #e9f0fb;
+  border: 1px solid #223a5d;
+  border-radius: 10px;
+  background: #081321;
+}
+
+details {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #172a46;
+  border-radius: 14px;
+}
+
+.primary-button,
+.secondary-button {
+  border: 0;
+  border-radius: 11px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.primary-button {
+  width: 100%;
+  padding: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, #2f6cff, #5d91ff);
+}
+
+.secondary-button {
+  padding: 9px 13px;
+  color: #bad0ff;
+  background: #122442;
+}
+
+.empty-state {
+  display: grid;
+  place-items: center;
+  min-height: 300px;
+  text-align: center;
+  color: #8292aa;
+}
+
+.shield {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border: 1px solid #31548b;
+  border-radius: 26px;
+  color: #7fa8ff;
+  font-size: 1.5rem;
+  font-weight: 900;
+  background: #10213b;
+}
+
+.risk-banner {
+  padding: 22px;
+  margin-bottom: 28px;
+  border-radius: 16px;
+}
+
+.risk-banner.normal {
+  color: #8ff0c5;
+  background: rgba(24, 134, 87, 0.16);
+}
+
+.risk-banner.suspicious {
+  color: #ff9da5;
+  background: rgba(176, 44, 56, 0.18);
+}
+
+.probability-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress {
+  height: 11px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #15243a;
+}
+
+.progress-value {
+  height: 100%;
+  background: #5d91ff;
+}
+
+.details div {
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 0;
+  border-bottom: 1px solid #172a46;
+}
+
+dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.error {
+  color: #ff98a1;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 28px;
+  color: #75869f;
+}
+
+footer a {
+  color: #82a9ff;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .metrics-grid,
+  .main-inputs,
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}

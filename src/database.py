@@ -427,6 +427,7 @@ def get_events_since(
                     created_at,
                     fraud_probability,
                     fraud_prediction,
+                    latency_ms,
                     features_json
                 FROM inference_events
                 WHERE created_at >= %s
@@ -443,6 +444,7 @@ def get_events_since(
                     created_at,
                     fraud_probability,
                     fraud_prediction,
+                    latency_ms,
                     features_json
                 FROM inference_events
                 WHERE created_at >= ?
@@ -462,6 +464,7 @@ def get_events_since(
         "created_at",
         "fraud_probability",
         "fraud_prediction",
+        "latency_ms",
         "features_json",
     ]
 
@@ -507,6 +510,17 @@ def get_events_since(
                     item[
                         "fraud_prediction"
                     ]
+                ),
+                "latency_ms": float(
+                    item.get(
+                        "latency_ms",
+                        0.0,
+                    )
+                    if hasattr(
+                        item,
+                        "get",
+                    )
+                    else 0.0
                 ),
                 "features": features,
             }

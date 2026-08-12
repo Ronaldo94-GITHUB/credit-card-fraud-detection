@@ -354,3 +354,50 @@ Estados possiveis:
 
 Sao necessarias pelo menos 30 inferencias
 no periodo para o calculo estatistico.
+
+
+## Monitoramento Temporal
+
+A camada MLOps possui series temporais
+baseadas nas inferencias persistidas em
+PostgreSQL.
+
+Endpoint:
+
+`GET /metrics/timeseries?period=7d`
+
+Periodos:
+
+- 24h;
+- 7d;
+- 30d.
+
+Metricas temporais:
+
+- volume de inferencias;
+- probabilidade media;
+- taxa de classificacoes suspeitas;
+- latencia media.
+
+## Alertas MLOps
+
+Endpoint:
+
+`GET /alerts/mlops?period=7d`
+
+O mecanismo combina sinais de:
+
+- drift estatistico PSI/KS;
+- latencia elevada;
+- taxa suspeita elevada;
+- insuficiencia de dados.
+
+Severidades:
+
+- info;
+- warning;
+- critical.
+
+Os alertas sao indicadores operacionais
+e devem ser calibrados para o ambiente
+financeiro real.

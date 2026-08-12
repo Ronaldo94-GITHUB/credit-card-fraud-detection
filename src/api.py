@@ -25,6 +25,15 @@ from src.statistical_drift import (
 )
 
 
+from src.temporal_metrics import (
+    build_temporal_metrics,
+)
+
+from src.mlops_alerts import (
+    build_mlops_alerts,
+)
+
+
 from src.predict import load_model_bundle
 from src.predict import predict_dataframe
 from src.predict import resolve_default_model_path
@@ -36,7 +45,7 @@ app = FastAPI(
         "Credit card fraud detection "
         "with XGBoost and MLOps."
     ),
-    version="0.4.0",
+    version="0.5.0",
 )
 
 
@@ -119,7 +128,7 @@ def root():
         ),
         "status": "online",
         "docs": "/docs",
-        "version": "0.4.0",
+        "version": "0.5.0",
     }
 
 
@@ -255,6 +264,39 @@ def inference_history(
 def drift():
     return calculate_drift_status()
 
+
+
+
+@app.get("/metrics/timeseries")
+def temporal_metrics(
+    period: str = "7d",
+):
+    try:
+        return build_temporal_metrics(
+            period=period
+        )
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
+
+
+@app.get("/alerts/mlops")
+def mlops_alerts(
+    period: str = "7d",
+):
+    try:
+        return build_mlops_alerts(
+            period=period
+        )
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
 
 
 @app.get("/drift/statistical")

@@ -236,3 +236,25 @@ uvicorn src.api:app --reload
 ## Autor
 
 Rogério Augusto Sabino
+
+## Dashboard Web
+
+O projeto possui um frontend React publicado no Render.
+
+**Dashboard:**
+
+https://credit-card-fraud-detection-frontend-k6ki.onrender.com
+
+**Swagger API:**
+
+https://credit-card-fraud-detection-v5li.onrender.com/docs
+
+O dashboard permite:
+
+- analisar transacoes;
+- utilizar exemplos reais de transacao normal e fraude;
+- visualizar probabilidade de fraude;
+- consultar o modelo em producao;
+- armazenar localmente o historico das ultimas analises;
+- visualizar SHAP, ROC Curve, Precision-Recall e matriz de confusao.
+

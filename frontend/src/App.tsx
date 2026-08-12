@@ -10,6 +10,8 @@ import type {
 
 import "./App.css"
 
+import { PersistentMlopsPanel } from "./PersistentMlopsPanel"
+
 import { OperationsPanel } from "./OperationsPanel"
 
 import {
@@ -697,6 +699,9 @@ function App() {
           operationalMetrics
         }
       />
+
+
+      <PersistentMlopsPanel />
 
       <section
         className="insights-section"

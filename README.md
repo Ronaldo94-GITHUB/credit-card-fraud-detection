@@ -286,3 +286,33 @@ As metricas incluem:
 O dashboard React apresenta parte dessas metricas em uma secao operacional de MLOps.
 
 > Os contadores sao mantidos em memoria e sao reiniciados quando a instancia da API e reiniciada.
+
+## MLOps Persistente
+
+A API registra eventos de inferencia
+em uma camada de persistencia.
+
+Em desenvolvimento:
+
+- SQLite local.
+
+Em producao:
+
+- PostgreSQL quando `DATABASE_URL`
+  estiver configurada.
+
+Endpoints:
+
+- `GET /metrics/persistent`
+- `GET /inference-history`
+- `GET /drift`
+
+Cada inferencia registra timestamp,
+valor, probabilidade, classificacao,
+latencia, modelo, threshold e features.
+
+O endpoint `/drift` fornece um sinal
+operacional simples baseado na janela
+recente de inferencias. Ele nao substitui
+uma analise estatistica completa de
+data drift.

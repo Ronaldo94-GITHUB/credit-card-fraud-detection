@@ -1,37 +1,37 @@
-from time import perf_counter
-
+﻿from time import perf_counter
 from typing import Annotated
 
 import pandas as pd
 
+from fastapi import FastAPI
+from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from fastapi import (
-    FastAPI,
-    HTTPException,
-)
+from pydantic import BaseModel
+from pydantic import Field
 
-from pydantic import (
-    BaseModel,
-    Field,
-)
+from src.database import database_status
+from src.database import get_persistent_metrics
+from src.database import get_recent_events
+from src.database import initialize_database
+from src.database import save_inference_event
+
+from src.drift import calculate_drift_status
 
 from src.metrics import inference_metrics
 
-from src.predict import (
-    load_model_bundle,
-    predict_dataframe,
-    resolve_default_model_path,
-)
+from src.predict import load_model_bundle
+from src.predict import predict_dataframe
+from src.predict import resolve_default_model_path
 
 
 app = FastAPI(
     title="Credit Card Fraud Detection API",
     description=(
-        "API para classificacao de transacoes "
-        "com Machine Learning e XGBoost."
+        "Credit card fraud detection "
+        "with XGBoost and MLOps."
     ),
-    version="0.2.0",
+    version="0.4.0",
 )
 
 
@@ -45,9 +45,18 @@ app.add_middleware(
         "https://credit-card-fraud-detection-frontend-k6ki.onrender.com",
     ],
     allow_credentials=False,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=[
+        "GET",
+        "POST",
+        "OPTIONS",
+    ],
     allow_headers=["*"],
 )
+
+
+initialize_database()
+
+
 class TransactionInput(BaseModel):
     Time: Annotated[
         float,
@@ -105,6 +114,7 @@ def root():
         ),
         "status": "online",
         "docs": "/docs",
+        "version": "0.4.0",
     }
 
 
@@ -114,20 +124,55 @@ def health():
         resolve_default_model_path()
     )
 
+    db = database_status()
+
     return {
         "status": "healthy",
         "model_available": (
             model_path.exists()
         ),
+        "database_available": (
+            db["available"]
+        ),
+        "storage": db["storage"],
     }
+
+
+@app.get("/readiness")
+def readiness():
+    try:
+        bundle = load_model_bundle()
+
+        db = database_status()
+
+        if not db["available"]:
+            raise HTTPException(
+                status_code=503,
+                detail="Database unavailable.",
+            )
+
+        return {
+            "status": "ready",
+            "model_name": (
+                bundle["model_name"]
+            ),
+            "threshold": float(
+                bundle["threshold"]
+            ),
+            "database": db,
+        }
+
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=str(exc),
+        ) from exc
 
 
 @app.get("/model-info")
 def model_info():
     try:
-        bundle = (
-            load_model_bundle()
-        )
+        bundle = load_model_bundle()
 
         return {
             "model_name": (
@@ -150,30 +195,6 @@ def model_info():
                 bundle.get(
                     "cv_average_precision"
                 )
-            ),
-        }
-
-    except FileNotFoundError as exc:
-        raise HTTPException(
-            status_code=503,
-            detail=str(exc),
-        ) from exc
-
-
-
-
-@app.get("/readiness")
-def readiness():
-    try:
-        bundle = load_model_bundle()
-
-        return {
-            "status": "ready",
-            "model_name": bundle[
-                "model_name"
-            ],
-            "threshold": float(
-                bundle["threshold"]
             ),
         }
 
@@ -207,6 +228,29 @@ def reset_metrics():
             inference_metrics.snapshot()
         ),
     }
+
+
+@app.get("/metrics/persistent")
+def persistent_metrics():
+    return get_persistent_metrics()
+
+
+@app.get("/inference-history")
+def inference_history(
+    limit: int = 20,
+):
+    return {
+        "items": get_recent_events(
+            limit=limit
+        )
+    }
+
+
+@app.get("/drift")
+def drift():
+    return calculate_drift_status()
+
+
 @app.post(
     "/predict",
     response_model=PredictionResponse,
@@ -221,46 +265,84 @@ def predict(
             transaction.model_dump()
         )
 
-        df = pd.DataFrame(
+        frame = pd.DataFrame(
             [payload]
         )
 
-        result = (
-            predict_dataframe(df)
+        result = predict_dataframe(
+            frame
         )
 
-        bundle = (
-            load_model_bundle()
-        )
+        bundle = load_model_bundle()
 
         row = result.iloc[0]
 
+        fraud_probability = float(
+            row[
+                "fraud_probability"
+            ]
+        )
+
+        fraud_prediction = int(
+            row[
+                "fraud_prediction"
+            ]
+        )
+
+        risk_label = str(
+            row[
+                "risk_label"
+            ]
+        )
+
+        model_name = str(
+            bundle[
+                "model_name"
+            ]
+        )
+
+        threshold = float(
+            bundle[
+                "threshold"
+            ]
+        )
+
+        latency_ms = (
+            perf_counter()
+            - started
+        ) * 1000.0
+
+        inference_metrics.record(
+            probability=fraud_probability,
+            prediction=fraud_prediction,
+            latency_ms=latency_ms,
+        )
+
+        save_inference_event(
+            features=payload,
+            amount=transaction.Amount,
+            fraud_probability=(
+                fraud_probability
+            ),
+            fraud_prediction=(
+                fraud_prediction
+            ),
+            risk_label=risk_label,
+            latency_ms=latency_ms,
+            model_name=model_name,
+            threshold=threshold,
+        )
+
         return PredictionResponse(
-            fraud_probability=float(
-                row[
-                    "fraud_probability"
-                ]
+            fraud_probability=(
+                fraud_probability
             ),
-            fraud_prediction=int(
-                row[
-                    "fraud_prediction"
-                ]
+            fraud_prediction=(
+                fraud_prediction
             ),
-            risk_label=str(
-                row[
-                    "risk_label"
-                ]
-            ),
-            model_name=str(
-                bundle[
-                    "model_name"
-                ]
-            ),
-            threshold=float(
-                bundle[
-                    "threshold"
-                ]
-            ),
+            risk_label=risk_label,
+            model_name=model_name,
+            threshold=threshold,
         )
 
     except Exception as exc:

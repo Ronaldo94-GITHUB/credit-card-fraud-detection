@@ -49,3 +49,6 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Modelo de producao
+!models/tuned_xgboost_model.joblib

@@ -54,3 +54,6 @@ Thumbs.db
 !models/tuned_xgboost_model.joblib
 data/runtime_metrics.db
 .phase14_admin_key.txt
+
+# Runtime observability reports
+reports/runtime/

@@ -1,0 +1,57 @@
+﻿name: Production Monitoring
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "7,37 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-monitoring
+  cancel-in-progress: true
+
+jobs:
+
+  production-monitor:
+
+    name: Production Monitor
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 10
+
+    environment:
+      name: production
+      url: https://credit-card-fraud-detection-v5li.onrender.com
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Run production monitor
+        run: |
+          python scripts/production_monitor.py
+
+      - name: Upload monitoring report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-monitor-report
+          path: reports/runtime/production_monitor.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Monitoring healthy
+        if: success()
+        run: |
+          echo "PRODUCTION_MONITORING_STATUS=HEALTHY"
+          echo "PRODUCTION_ALERT_ACTIVE=False"

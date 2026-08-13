@@ -402,10 +402,10 @@ button,
         </h1>
 
         <div class="subtitle">
-            Vis?o executiva da sa?de operacional,
+            Visão executiva da saúde operacional,
             risco, modelo, drift, Ground Truth,
             alertas e performance da plataforma
-            de detec??o de fraude.
+            de detecção de fraude.
         </div>
     </div>
 
@@ -422,7 +422,7 @@ button,
             class="primary button"
             href="/executive/report?period=7d"
         >
-            Gerar Relat?rio PDF
+            Gerar Relatório PDF
         </a>
     </div>
 </div>
@@ -475,13 +475,13 @@ button,
             --
         </div>
         <div class="kpi-detail">
-            vers?o em produ??o
+            versão em produção
         </div>
     </div>
 
     <div class="card">
         <div class="kpi-label">
-            INFER?NCIAS
+            INFERÊNCIAS
         </div>
         <div
             id="inferenceCount"
@@ -511,7 +511,7 @@ button,
 
     <div class="card">
         <div class="kpi-label">
-            LAT?NCIA
+            LATÊNCIA
         </div>
         <div
             id="latency"
@@ -559,7 +559,7 @@ button,
 
     <div class="card">
         <div class="section-title">
-            Sa?de do Modelo
+            Saúde do Modelo
         </div>
 
         <div class="status-line">
@@ -618,7 +618,7 @@ button,
 
         <div class="status-line">
             <span class="status-label">
-                Labels dispon?veis
+                Labels disponíveis
             </span>
             <span
                 id="groundTruthCount"
@@ -669,7 +669,7 @@ button,
             class="raw-note"
             style="margin-top: 12px"
         >
-            M?tricas aparecem quando Ground Truth
+            Métricas aparecem quando Ground Truth
             suficiente estiver dispon?vel.
         </div>
     </div>
@@ -680,7 +680,7 @@ button,
 
     <div class="card">
         <div class="section-title">
-            Drift Estat?stico
+            Drift Estatístico
         </div>
 
         <div class="status-line">
@@ -697,7 +697,7 @@ button,
 
         <div class="status-line">
             <span class="status-label">
-                Features cr?ticas
+                Features críticas
             </span>
             <span
                 id="criticalFeatures"
@@ -721,7 +721,7 @@ button,
 
         <div class="raw-note">
             PSI e KS s?o utilizados pelo projeto para
-            detectar mudan?as relevantes na distribui??o.
+            detectar mudanças relevantes na distribuição.
         </div>
     </div>
 
@@ -732,7 +732,7 @@ button,
 
         <div class="status-line">
             <span class="status-label">
-                Lat?ncia m?dia
+                Latência média
             </span>
             <span
                 id="averageLatency"
@@ -781,7 +781,7 @@ button,
 
     <div class="card">
         <div class="section-title">
-            Governan?a
+            Governança
         </div>
 
         <div class="status-line">
@@ -839,7 +839,7 @@ button,
 
     <div class="card">
         <div class="section-title">
-            Recomenda??o Executiva
+            Recomendação Executiva
         </div>
 
         <div
@@ -858,7 +858,7 @@ button,
     Executive MLOps Dashboard
     <br>
     Dados agregados. Nenhuma transa??o individual ?
-    exibida nesta vis?o executiva.
+    exibida nesta visão executiva.
 </div>
 
 </div>
@@ -1128,7 +1128,7 @@ function setBadge(
     }
 
     const text = String(
-        value ?? "indispon?vel"
+        value ?? "indisponível"
     );
 
     const normalized = (
@@ -1152,7 +1152,7 @@ function setBadge(
     } else if (
         normalized.includes("warning")
         || normalized.includes("alert")
-        || normalized.includes("aten??o")
+        || normalized.includes("atenção")
     ) {
         element.className += (
             "badge-warning"
@@ -1282,21 +1282,21 @@ function buildSummary(
     ) {
         message = (
             "A plataforma apresenta sinais "
-            + "operacionais est?veis no per?odo "
+            + "operacionais estáveis no período "
             + currentPeriod
-            + ". N?o foram identificados "
-            + "indicadores executivos cr?ticos "
-            + "pelos dados dispon?veis."
+            + ". Não foram identificados "
+            + "indicadores executivos críticos "
+            + "pelos dados disponíveis."
         );
     } else {
         message = (
-            "O per?odo "
+            "O período "
             + currentPeriod
-            + " requer aten??o executiva devido a: "
+            + " requer atenção executiva devido a: "
             + problems.join(", ")
             + ". Recomenda-se revisar os sinais "
-            + "t?cnicos antes de qualquer altera??o "
-            + "no modelo em produ??o."
+            + "t?cnicos antes de qualquer alteração "
+            + "no modelo em produção."
         );
     }
 
@@ -1314,9 +1314,9 @@ function buildSummary(
         problems.length === 0
             ? (
                 "Manter o modelo atual e continuar "
-                + "o monitoramento. Promo??o ou "
+                + "o monitoramento. Promoção ou "
                 + "retraining s? devem ocorrer "
-                + "pelos fluxos governados j? "
+                + "pelos fluxos governados já "
                 + "existentes no projeto."
             )
             : (
@@ -1345,7 +1345,7 @@ function renderAlerts(
     ) {
         container.innerHTML = (
             '<div class="alert-item">'
-            + "Dados de alertas indispon?veis."
+            + "Dados de alertas indisponíveis."
             + "</div>"
         );
 
@@ -1672,7 +1672,7 @@ async function loadDashboard() {
                 "status",
             ]
         )
-        ?? "indispon?vel"
+        ?? "indisponível"
     );
 
     const criticalFeatureCount = pick(
@@ -1885,7 +1885,7 @@ async function loadDashboard() {
     ) {
         setText(
             "groundTruthNote",
-            "M?tricas de Ground Truth est?o "
+            "Métricas de Ground Truth est?o "
             + "protegidas administrativamente."
         );
     }
@@ -1894,14 +1894,14 @@ async function loadDashboard() {
         "healthStatus",
         health.ok
             ? "healthy"
-            : "indispon?vel"
+            : "indisponível"
     );
 
     setBadge(
         "readinessStatus",
         readiness.ok
             ? "ready"
-            : "indispon?vel"
+            : "indisponível"
     );
 
     const criticalAlerts = (
@@ -1916,7 +1916,7 @@ async function loadDashboard() {
             ? criticalAlerts
             : (
                 alertsData.ok
-                ? "0 cr?ticos"
+                ? "0 críticos"
                 : "--"
             )
     );
@@ -1953,7 +1953,7 @@ REPORT_HTML = r"""
     name="viewport"
     content="width=device-width, initial-scale=1.0"
 >
-<title>Relat?rio Executivo MLOps</title>
+<title>Relatório Executivo MLOps</title>
 
 <style>
 :root {
@@ -2174,11 +2174,11 @@ h2 {
     </div>
 
     <h1>
-        Relat?rio Executivo MLOps
+        Relatório Executivo MLOps
     </h1>
 
     <div class="meta">
-        Per?odo:
+        Período:
         <strong id="periodLabel">--</strong>
         <br>
 
@@ -2193,7 +2193,7 @@ h2 {
     id="summary"
     class="summary"
 >
-    Carregando informa??es executivas...
+    Carregando informações executivas...
 </div>
 
 <h2>2. Indicadores Principais</h2>
@@ -2214,7 +2214,7 @@ h2 {
 
     <div class="kpi">
         <div class="label">
-            Infer?ncias
+            Inferências
         </div>
         <div
             id="inferenceCount"
@@ -2238,7 +2238,7 @@ h2 {
 
     <div class="kpi">
         <div class="label">
-            Lat?ncia
+            Latência
         </div>
         <div
             id="latency"
@@ -2262,7 +2262,7 @@ h2 {
 
     <div class="kpi">
         <div class="label">
-            Alertas cr?ticos
+            Alertas críticos
         </div>
         <div
             id="alerts"
@@ -2274,7 +2274,7 @@ h2 {
 
 </div>
 
-<h2>3. Sa?de Operacional e Modelo</h2>
+<h2>3. Saúde Operacional e Modelo</h2>
 
 <table class="table">
     <tr>
@@ -2298,7 +2298,7 @@ h2 {
     </tr>
 
     <tr>
-        <td>Lat?ncia m?dia</td>
+        <td>Latência média</td>
         <td id="averageLatency">--</td>
     </tr>
 
@@ -2312,7 +2312,7 @@ h2 {
 
 <table class="table">
     <tr>
-        <td>Labels dispon?veis</td>
+        <td>Labels disponíveis</td>
         <td id="gtCount">--</td>
     </tr>
 
@@ -2341,7 +2341,7 @@ h2 {
     </tr>
 
     <tr>
-        <td>Features cr?ticas</td>
+        <td>Features críticas</td>
         <td id="criticalFeatures">--</td>
     </tr>
 
@@ -2351,7 +2351,7 @@ h2 {
     </tr>
 </table>
 
-<h2>6. Governan?a</h2>
+<h2>6. Governança</h2>
 
 <table class="table">
     <tr>
@@ -2385,21 +2385,21 @@ h2 {
     </tr>
 </table>
 
-<h2>7. Recomenda??o Executiva</h2>
+<h2>7. Recomendação Executiva</h2>
 
 <div
     id="recommendation"
     class="recommendation"
 >
-    Analisando os sinais dispon?veis...
+    Analisando os sinais disponíveis...
 </div>
 
 <div class="footer">
-    Relat?rio executivo gerado pela plataforma
+    Relatório executivo gerado pela plataforma
     Credit Card Fraud Detection.
     <br>
-    Esta vis?o utiliza informa??es agregadas e n?o
-    apresenta os dados completos de transa??es individuais.
+    Esta visão utiliza informações agregadas e não
+    apresenta os dados completos de transações individuais.
 </div>
 
 </div>
@@ -2708,7 +2708,7 @@ async function loadReport() {
                 "status",
             ]
         )
-        ?? "indispon?vel"
+        ?? "indisponível"
     );
 
     const criticalFeatures = recursiveFind(
@@ -2878,14 +2878,14 @@ async function loadReport() {
         "health",
         health.ok
             ? "Healthy"
-            : "Indispon?vel"
+            : "Indisponível"
     );
 
     setText(
         "readiness",
         readiness.ok
             ? "Ready"
-            : "Indispon?vel"
+            : "Indisponível"
     );
 
     setText(
@@ -2934,16 +2934,16 @@ async function loadReport() {
 
     const summary = critical
         ? (
-            "O per?odo apresenta sinais que "
-            + "merecem aten??o executiva. "
-            + "Recomenda-se investigar sa?de "
+            "O período apresenta sinais que "
+            + "merecem atenção executiva. "
+            + "Recomenda-se investigar saúde "
             + "operacional, alertas e drift antes "
-            + "de qualquer altera??o no modelo "
-            + "em produ??o."
+            + "de qualquer alteração no modelo "
+            + "em produção."
         )
         : (
-            "Os sinais executivos dispon?veis "
-            + "indicam opera??o est?vel no per?odo "
+            "Os sinais executivos disponíveis "
+            + "indicam operação est?vel no período "
             + period
             + ". O modelo atual pode ser mantido "
             + "sob monitoramento cont?nuo."
@@ -2952,9 +2952,9 @@ async function loadReport() {
     const recommendation = critical
         ? (
             "Manter o champion atual enquanto os "
-            + "sinais cr?ticos forem investigados. "
-            + "N?o realizar promo??o ou retraining "
-            + "apenas com base neste relat?rio. "
+            + "sinais críticos forem investigados. "
+            + "Não realizar promoção ou retraining "
+            + "apenas com base neste relatório. "
             + "Utilizar os fluxos governados do "
             + "Model Registry, Ground Truth e "
             + "Continuous Evaluation."
@@ -2962,9 +2962,9 @@ async function loadReport() {
         : (
             "Manter o modelo atual e continuar "
             + "observando drift, Ground Truth, "
-            + "lat?ncia e alertas. Qualquer "
-            + "retraining ou promo??o deve continuar "
-            + "passando pelos gates de governan?a "
+            + "latência e alertas. Qualquer "
+            + "retraining ou promoção deve continuar "
+            + "passando pelos gates de governança "
             + "existentes."
         );
 

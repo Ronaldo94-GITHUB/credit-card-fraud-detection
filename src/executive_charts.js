@@ -122,7 +122,7 @@
     function renderEmpty(element) {
         element.innerHTML = (
             '<div class="chart-empty">'
-            + "Dados insuficientes para este periodo."
+            + "Dados insuficientes para este período."
             + "</div>"
         );
     }
@@ -331,6 +331,22 @@
             && typeof window.currentPeriod === "string"
         ) {
             return window.currentPeriod;
+        }
+
+        const activePeriodButton = (
+            document.querySelector(
+                ".period-button.active"
+            )
+        );
+
+        if (
+            activePeriodButton
+            && activePeriodButton.dataset
+            && activePeriodButton.dataset.period
+        ) {
+            return (
+                activePeriodButton.dataset.period
+            );
         }
 
         return (

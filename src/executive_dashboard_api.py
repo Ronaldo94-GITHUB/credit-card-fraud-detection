@@ -455,6 +455,14 @@ button,
 </div>
 
 <div
+    id="periodContext"
+    class="raw-note"
+    style="margin: -10px 0 18px 4px;"
+>
+    Janela analisada: Últimos 7 dias
+</div>
+
+<div
     id="summary"
     class="executive-summary"
 >
@@ -859,7 +867,7 @@ button,
 <div class="executive-charts-grid">
     <div class="executive-chart-card">
         <div class="executive-chart-title">
-            Tendencia de Inferencias
+            Tendencia de Inferências
         </div>
         <div class="executive-chart-subtitle">
             Volume ao longo do periodo
@@ -872,7 +880,7 @@ button,
 
     <div class="executive-chart-card">
         <div class="executive-chart-title">
-            Tendencia de Latencia
+            Tendencia de Latência
         </div>
         <div class="executive-chart-subtitle">
             Comportamento operacional
@@ -909,6 +917,7 @@ button,
 
 <script>
 let currentPeriod = "7d";
+window.currentPeriod = currentPeriod;
 
 
 function deepFind(
@@ -1143,6 +1152,60 @@ function formatMs(
 }
 
 
+function temporalWeightedAverage(
+    data,
+    key
+) {
+    const points = (
+        data
+        && Array.isArray(
+            data.points
+        )
+    )
+        ? data.points
+        : [];
+
+    let weightedSum = 0;
+    let totalCount = 0;
+
+    for (
+        const point
+        of points
+    ) {
+        const count = Number(
+            point.count
+        );
+
+        const value = Number(
+            point[key]
+        );
+
+        if (
+            Number.isFinite(count)
+            && count > 0
+            && Number.isFinite(value)
+        ) {
+            weightedSum += (
+                value * count
+            );
+
+            totalCount += count;
+        }
+    }
+
+    if (
+        totalCount === 0
+    ) {
+        return null;
+    }
+
+    return (
+        weightedSum
+        / totalCount
+    );
+}
+
+
 function setText(
     id,
     value
@@ -1185,7 +1248,7 @@ function setBadge(
 
     if (
         normalized.includes("critical")
-        || normalized.includes("cr?tico")
+        || normalized.includes("crítico")
         || normalized.includes("down")
         || normalized.includes("failed")
         || normalized.includes("error")
@@ -1257,10 +1320,27 @@ async function safeFetch(
 }
 
 
+function periodLabel(
+    period
+) {
+    const labels = {
+        "24h": "Últimas 24 horas",
+        "7d": "Últimos 7 dias",
+        "30d": "Últimos 30 dias",
+    };
+
+    return (
+        labels[period]
+        ?? period
+    );
+}
+
+
 function changePeriod(
     period
 ) {
     currentPeriod = period;
+    window.currentPeriod = period;
 
     document
         .querySelectorAll(
@@ -1284,6 +1364,14 @@ function changePeriod(
     );
 
     loadDashboard();
+
+    // PHASE31_PERIOD_CHART_REFRESH
+    if (
+        typeof window.renderExecutiveCharts
+        === "function"
+    ) {
+        window.renderExecutiveCharts();
+    }
 }
 
 
@@ -1306,7 +1394,7 @@ function buildSummary(
         )
     ) {
         problems.push(
-            "drift cr?tico"
+            "drift crítico"
         );
     }
 
@@ -1315,7 +1403,7 @@ function buildSummary(
     ) {
         problems.push(
             context.criticalAlerts
-            + " alerta(s) cr?tico(s)"
+            + " alerta(s) crítico(s)"
         );
     }
 
@@ -1339,7 +1427,7 @@ function buildSummary(
             + " requer atenção executiva devido a: "
             + problems.join(", ")
             + ". Recomenda-se revisar os sinais "
-            + "t?cnicos antes de qualquer alteração "
+            + "técnicos antes de qualquer alteração "
             + "no modelo em produção."
         );
     }
@@ -1359,7 +1447,7 @@ function buildSummary(
             ? (
                 "Manter o modelo atual e continuar "
                 + "o monitoramento. Promoção ou "
-                + "retraining s? devem ocorrer "
+                + "retraining só devem ocorrer "
                 + "pelos fluxos governados já "
                 + "existentes no projeto."
             )
@@ -1367,8 +1455,8 @@ function buildSummary(
                 "Investigar drift, alertas e "
                 + "performance antes de promover "
                 + "ou retreinar um modelo. "
-                + "Preservar o champion atual at? "
-                + "existir evid?ncia suficiente."
+                + "Preservar o champion atual até "
+                + "existir evidência suficiente."
             )
     );
 }
@@ -1526,6 +1614,17 @@ function renderAlerts(
 
 
 async function loadDashboard() {
+    // PHASE31_PERIOD_CONTEXT_UPDATE
+    setText(
+        "periodContext",
+        (
+            "Janela analisada: "
+            + periodLabel(
+                currentPeriod
+            )
+        )
+    );
+
     document.body.classList.add(
         "loading"
     );
@@ -1627,15 +1726,31 @@ async function loadDashboard() {
     const inferenceCount = pick(
         persistentData,
         [
+            "total_predictions",
             "total_inferences",
             "inference_count",
             "count",
+            "metrics.total_predictions",
             "metrics.total_inferences",
         ],
         [
+            "total_predictions",
             "total_inferences",
             "inference_count",
         ]
+    );
+
+    const periodInferenceCount = (
+        pick(
+            temporalData,
+            [
+                "total_predictions",
+            ],
+            [
+                "total_predictions",
+            ]
+        )
+        ?? inferenceCount
     );
 
     const fraudRateValue = pick(
@@ -1652,6 +1767,19 @@ async function loadDashboard() {
         ]
     );
 
+    const periodFraudRateValue = (
+        pick(
+            temporalData,
+            [
+                "suspicious_rate",
+            ],
+            [
+                "suspicious_rate",
+            ]
+        )
+        ?? fraudRateValue
+    );
+
     const averageLatencyValue = pick(
         persistentData,
         [
@@ -1663,6 +1791,14 @@ async function loadDashboard() {
             "average_latency_ms",
             "avg_latency_ms",
         ]
+    );
+
+    const periodAverageLatencyValue = (
+        temporalWeightedAverage(
+            temporalData,
+            "average_latency_ms"
+        )
+        ?? averageLatencyValue
     );
 
     const p95 = pick(
@@ -1795,7 +1931,9 @@ async function loadDashboard() {
 
     setText(
         "modelVersion",
-        modelVersion ?? "--"
+        modelVersion
+        ?? modelName
+        ?? "--"
     );
 
     setText(
@@ -1816,29 +1954,28 @@ async function loadDashboard() {
     setText(
         "inferenceCount",
         formatNumber(
-            inferenceCount
+            periodInferenceCount
         )
     );
 
     setText(
         "fraudRate",
         formatPercent(
-            fraudRateValue
+            periodFraudRateValue
         )
     );
 
     setText(
         "latency",
         formatMs(
-            p95
-            ?? averageLatencyValue
+            periodAverageLatencyValue
         )
     );
 
     setText(
         "averageLatency",
         formatMs(
-            averageLatencyValue
+            periodAverageLatencyValue
         )
     );
 
@@ -2433,12 +2570,12 @@ h2 {
 
 
 <!-- PHASE30_REPORT_CHARTS -->
-<h2>7. Tendencias Operacionais</h2>
+<h2>7. Tendências Operacionais</h2>
 
 <div class="executive-charts-grid">
     <div class="executive-chart-card">
         <div class="executive-chart-title">
-            Inferencias
+            Inferências
         </div>
         <div
             id="executiveInferenceChart"
@@ -2448,7 +2585,7 @@ h2 {
 
     <div class="executive-chart-card">
         <div class="executive-chart-title">
-            Latencia
+            Latência
         </div>
         <div
             id="executiveLatencyChart"
@@ -2467,7 +2604,7 @@ h2 {
     </div>
 </div>
 
-<h2>8. Recomendacao Executiva</h2>
+<h2>8. Recomendação Executiva</h2>
 
 
 <div
@@ -2678,6 +2815,71 @@ async function safeFetch(
 }
 
 
+function reportPeriodLabel(
+    value
+) {
+    const labels = {
+        "24h": "Últimas 24 horas",
+        "7d": "Últimos 7 dias",
+        "30d": "Últimos 30 dias",
+    };
+
+    return (
+        labels[value]
+        ?? value
+    );
+}
+
+
+function reportTemporalWeightedAverage(
+    data,
+    key
+) {
+    const points = (
+        data
+        && Array.isArray(
+            data.points
+        )
+    )
+        ? data.points
+        : [];
+
+    let total = 0;
+    let weighted = 0;
+
+    for (
+        const point
+        of points
+    ) {
+        const count = Number(
+            point.count
+        );
+
+        const metric = Number(
+            point[key]
+        );
+
+        if (
+            Number.isFinite(count)
+            && count > 0
+            && Number.isFinite(metric)
+        ) {
+            total += count;
+
+            weighted += (
+                count * metric
+            );
+        }
+    }
+
+    return (
+        total > 0
+        ? weighted / total
+        : null
+    );
+}
+
+
 async function loadReport() {
     setText(
         "generatedAt",
@@ -2688,7 +2890,9 @@ async function loadReport() {
 
     setText(
         "periodLabel",
-        period
+        reportPeriodLabel(
+            period
+        )
     );
 
     const [
@@ -2749,29 +2953,52 @@ async function loadReport() {
         ]
     );
 
-    const inferenceCount = recursiveFind(
-        persistent.data,
-        [
-            "total_inferences",
-            "inference_count",
-        ]
+    const inferenceCount = (
+        recursiveFind(
+            temporal.data,
+            [
+                "total_predictions",
+            ]
+        )
+        ?? recursiveFind(
+            persistent.data,
+            [
+                "total_predictions",
+                "total_inferences",
+                "inference_count",
+            ]
+        )
     );
 
-    const fraudRate = recursiveFind(
-        persistent.data,
-        [
-            "fraud_rate",
-            "fraud_prediction_rate",
-            "suspicious_rate",
-        ]
+    const fraudRate = (
+        recursiveFind(
+            temporal.data,
+            [
+                "suspicious_rate",
+            ]
+        )
+        ?? recursiveFind(
+            persistent.data,
+            [
+                "fraud_rate",
+                "fraud_prediction_rate",
+                "suspicious_rate",
+            ]
+        )
     );
 
-    const averageLatency = recursiveFind(
-        persistent.data,
-        [
-            "average_latency_ms",
-            "avg_latency_ms",
-        ]
+    const averageLatency = (
+        reportTemporalWeightedAverage(
+            temporal.data,
+            "average_latency_ms"
+        )
+        ?? recursiveFind(
+            persistent.data,
+            [
+                "average_latency_ms",
+                "avg_latency_ms",
+            ]
+        )
     );
 
     const p95 = recursiveFind(
@@ -2874,7 +3101,9 @@ async function loadReport() {
 
     setText(
         "modelVersion",
-        version ?? "--"
+        version
+        ?? modelName
+        ?? "--"
     );
 
     setText(
@@ -3026,10 +3255,10 @@ async function loadReport() {
         )
         : (
             "Os sinais executivos disponíveis "
-            + "indicam operação est?vel no período "
+            + "indicam operação estável no período "
             + period
             + ". O modelo atual pode ser mantido "
-            + "sob monitoramento cont?nuo."
+            + "sob monitoramento contínuo."
         );
 
     const recommendation = critical

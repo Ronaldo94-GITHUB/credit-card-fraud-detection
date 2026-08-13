@@ -564,3 +564,48 @@ Performance benchmarks are treated as regression baselines,
 not guaranteed production capacity.
 
 <!-- PHASE28_PORTFOLIO_END -->
+
+<!-- PHASE29_EXECUTIVE_START -->
+
+---
+
+## Executive MLOps Dashboard
+
+The project includes an executive presentation layer for
+production MLOps signals.
+
+### Executive Dashboard
+
+`/executive`
+
+Provides an aggregated 24h / 7d / 30d view of:
+
+- active model;
+- inference volume;
+- predicted fraud rate;
+- operational latency;
+- statistical drift;
+- MLOps alerts;
+- Ground Truth;
+- model performance;
+- governance status;
+- executive recommendation.
+
+### Executive PDF Report
+
+`/executive/report?period=7d`
+
+The report uses an A4 print-ready layout.
+
+Click **Generate PDF** and use the browser option
+**Save as PDF**.
+
+The executive interface does not embed the administrative
+API key and does not expose complete individual
+transaction payloads.
+
+Documentation:
+
+[`docs/executive-dashboard.md`](docs/executive-dashboard.md)
+
+<!-- PHASE29_EXECUTIVE_END -->

@@ -771,3 +771,13 @@ def predict(
                 "Prediction failed."
             ),
         ) from exc
+
+# PHASE29_EXECUTIVE_DASHBOARD
+from src.executive_dashboard_api import (
+    router as executive_dashboard_router,
+)
+
+app.include_router(
+    executive_dashboard_router
+)
+

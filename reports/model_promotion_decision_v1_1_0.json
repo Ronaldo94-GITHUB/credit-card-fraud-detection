@@ -1,0 +1,27 @@
+{
+  "generated_at_utc": "2026-08-13T02:04:37.741591+00:00",
+  "target_version": "v1.1.0",
+  "promotion_recommended": false,
+  "action": "retained_champion",
+  "active_version_before": "v1.0.0",
+  "active_version_after": "v1.0.0",
+  "previous_version_after": null,
+  "promotion_result": null,
+  "gate": {
+    "promotion_recommended": false,
+    "criteria": {
+      "minimum_f2_gain": false,
+      "recall_guardrail": false,
+      "average_precision_guardrail": false,
+      "precision_guardrail": false
+    },
+    "deltas": {
+      "f2": -0.0374484,
+      "recall": -0.02702703,
+      "average_precision": -0.0063478,
+      "precision": -0.07348749
+    }
+  },
+  "automatic_promotion": false,
+  "controlled_promotion": true
+}

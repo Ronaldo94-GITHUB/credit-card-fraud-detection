@@ -1,0 +1,62 @@
+﻿name: Production Retraining
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "27 5 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-retraining
+  cancel-in-progress: true
+
+jobs:
+
+  retraining-readiness:
+
+    name: Retraining Readiness
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Run retraining pipeline
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          python scripts/run_retraining_pipeline.py
+
+      - name: Upload retraining report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: retraining-report
+          path: reports/runtime/retraining_v1_2_0.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Retraining governance
+        run: |
+          echo "AUTOMATIC_PROMOTION=False"
+          echo "GROUND_TRUTH_REQUIRED=True"
+          echo "RETRAINING_GOVERNED=True"

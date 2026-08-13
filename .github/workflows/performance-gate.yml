@@ -1,0 +1,104 @@
+﻿name: Performance Gate
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+    paths:
+      - "src/performance.py"
+      - "scripts/benchmark_model_inference.py"
+      - "scripts/load_test_api.py"
+      - "tests/test_performance.py"
+
+  pull_request:
+    paths:
+      - "src/performance.py"
+      - "scripts/benchmark_model_inference.py"
+      - "scripts/load_test_api.py"
+      - "tests/test_performance.py"
+
+permissions:
+  contents: read
+
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Ruff
+        run: |
+          python -m ruff check src tests scripts
+
+      - name: Tests
+        run: |
+          python -m pytest -q tests/test_performance.py
+
+      - name: Model benchmark
+        run: |
+          python scripts/benchmark_model_inference.py
+
+      - name: Start API
+        env:
+          ADMIN_API_KEY: performance-ci-key
+        run: |
+          python -m uvicorn src.api:app \
+            --host 127.0.0.1 \
+            --port 8765 \
+            > /tmp/fraud-api.log 2>&1 &
+          echo $! > /tmp/fraud-api.pid
+
+      - name: Wait API
+        run: |
+          python - <<'PY'
+          import time
+          import urllib.request
+
+          for _ in range(60):
+              try:
+                  with urllib.request.urlopen(
+                      "http://127.0.0.1:8765/health",
+                      timeout=2,
+                  ) as response:
+                      if response.status == 200:
+                          print("LOCAL_API_READY=True")
+                          raise SystemExit(0)
+              except Exception:
+                  time.sleep(1)
+
+          raise SystemExit(1)
+          PY
+
+      - name: Load test
+        run: |
+          python scripts/load_test_api.py \
+            --base-url http://127.0.0.1:8765 \
+            --endpoint /health \
+            --requests 120 \
+            --concurrency 12
+
+      - name: Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-reports
+          path: |
+            reports/runtime/model_performance_benchmark.json
+            reports/runtime/api_load_test.json
+          if-no-files-found: warn
+          retention-days: 30

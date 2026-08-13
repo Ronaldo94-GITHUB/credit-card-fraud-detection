@@ -451,3 +451,116 @@ por instancia. Para uma arquitetura
 distribuida com varias replicas, a camada
 pode evoluir para Redis ou outro armazenamento
 compartilhado.
+
+<!-- PHASE28_PORTFOLIO_START -->
+
+---
+
+## Production MLOps Architecture
+
+This project evolved from a machine-learning fraud
+classifier into a production-oriented MLOps system.
+
+### Live Application
+
+- **Frontend:** https://credit-card-fraud-detection-frontend-k6ki.onrender.com
+- **Backend API:** https://credit-card-fraud-detection-v5li.onrender.com
+- **Swagger / OpenAPI:** https://credit-card-fraud-detection-v5li.onrender.com/docs
+
+### Core Stack
+
+**Machine Learning**
+
+Python ? XGBoost ? scikit-learn ? pandas ? SHAP
+
+**Backend**
+
+FastAPI ? PostgreSQL ? SQLite
+
+**Frontend**
+
+React ? Vite
+
+**MLOps / DevOps**
+
+Docker ? GitHub Actions ? Render ? Model Registry ?
+Feature Contracts ? Drift Monitoring
+
+### Production MLOps
+
+Implemented capabilities include:
+
+- persistent inference telemetry
+- temporal monitoring
+- statistical drift detection
+- PSI and KS monitoring
+- MLOps alerts
+- model registry
+- continuous model evaluation
+- controlled model promotion
+- rollback
+- production ground-truth feedback
+- governed retraining
+- versioned feature contracts
+- TreeSHAP explainability
+- production smoke tests
+- scheduled monitoring
+
+### Security
+
+The API includes:
+
+- administrative API-key protection
+- rate limiting
+- request IDs
+- audit logging
+- payload limits
+- Content-Type validation
+- Host header protection
+- security response headers
+- HSTS for HTTPS
+- dependency vulnerability auditing
+
+### Performance
+
+Reproducible performance regression tests measure:
+
+- inference latency
+- HTTP latency
+- concurrent requests
+- throughput
+- error rate
+- p50
+- p95
+- p99
+
+Automated load testing targets a local API instance rather
+than intentionally stressing production.
+
+### Documentation
+
+- [`docs/architecture.md`](docs/architecture.md)
+- [`docs/mlops-lifecycle.md`](docs/mlops-lifecycle.md)
+- [`docs/portfolio-case-study.md`](docs/portfolio-case-study.md)
+- [`docs/model-registry-runbook.md`](docs/model-registry-runbook.md)
+- [`docs/continuous-model-evaluation.md`](docs/continuous-model-evaluation.md)
+- [`docs/production-retraining.md`](docs/production-retraining.md)
+- [`docs/feature-store.md`](docs/feature-store.md)
+- [`docs/production-explainability.md`](docs/production-explainability.md)
+- [`docs/security-hardening.md`](docs/security-hardening.md)
+- [`docs/performance-scale-readiness.md`](docs/performance-scale-readiness.md)
+
+### Engineering Principles
+
+The project intentionally avoids automatic production
+promotion.
+
+New model versions remain governed and rollback-capable.
+
+Production ground truth is not fabricated to satisfy
+retraining requirements.
+
+Performance benchmarks are treated as regression baselines,
+not guaranteed production capacity.
+
+<!-- PHASE28_PORTFOLIO_END -->

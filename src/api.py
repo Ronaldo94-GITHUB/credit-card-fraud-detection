@@ -55,6 +55,12 @@ from src.security import (
     require_admin_api_key,
     security_status,
 )
+from src.security_hardening import (
+    SecurityHardeningMiddleware,
+)
+from src.security_hardening_api import (
+    router as security_hardening_router,
+)
 from src.statistical_drift import (
     analyze_statistical_drift,
 )
@@ -87,9 +93,11 @@ app = FastAPI(
         "XGBoost, PostgreSQL, "
         "MLOps and governance."
     ),
-    version="0.6.0",
+    version="0.7.0",
 )
 
+
+app.add_middleware(SecurityHardeningMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -118,6 +126,7 @@ initialize_database()
 initialize_audit_table()
 initialize_ground_truth_table()
 app.include_router(production_explainability_router)
+app.include_router(security_hardening_router)
 
 
 class GroundTruthRequest(BaseModel):

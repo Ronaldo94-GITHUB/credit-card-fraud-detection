@@ -1,0 +1,60 @@
+﻿name: Continuous Model Evaluation
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "17 6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: continuous-model-evaluation
+  cancel-in-progress: true
+
+jobs:
+
+  evaluate-model:
+
+    name: Champion Challenger Evaluation
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 20
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Run champion challenger evaluation
+        run: |
+          python scripts/continuous_model_evaluation.py
+
+      - name: Upload evaluation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: continuous-model-evaluation
+          path: reports/runtime/model_evaluation.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Evaluation completed
+        run: |
+          echo "CONTINUOUS_MODEL_EVALUATION=True"
+          echo "AUTOMATIC_PROMOTION=False"
+          echo "PROMOTION_REQUIRES_APPROVED_GATE=True"

@@ -29,7 +29,7 @@ def main() -> int:
 
     report_ok = (
         report.status_code == 200
-        and "Relat?rio Executivo MLOps"
+        and "Relatório Executivo MLOps"
         in report.text
         and "window.print()"
         in report.text

@@ -18,7 +18,7 @@ def test_executive_dashboard_is_available():
     )
 
     assert (
-        "Gerar Relat?rio PDF"
+        "Gerar Relatório PDF"
         in response.text
     )
 
@@ -31,7 +31,7 @@ def test_executive_report_is_available():
     assert response.status_code == 200
 
     assert (
-        "Relat?rio Executivo MLOps"
+        "Relatório Executivo MLOps"
         in response.text
     )
 

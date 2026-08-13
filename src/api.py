@@ -781,3 +781,12 @@ app.include_router(
     executive_dashboard_router
 )
 
+# PHASE30_EXTERNAL_ALERTS
+from src.external_alerts_api import (
+    router as external_alerts_router,
+)
+
+app.include_router(
+    external_alerts_router
+)
+

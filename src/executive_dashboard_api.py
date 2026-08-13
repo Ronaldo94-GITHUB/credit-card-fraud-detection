@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 
 router = APIRouter(
     tags=["Executive MLOps"],
@@ -386,6 +386,7 @@ button,
     }
 }
 </style>
+<link rel="stylesheet" href="/executive/assets/charts.css">
 </head>
 
 <body>
@@ -851,6 +852,49 @@ button,
         </div>
     </div>
 
+</div>
+
+
+<!-- PHASE30_CHARTS_SECTION -->
+<div class="executive-charts-grid">
+    <div class="executive-chart-card">
+        <div class="executive-chart-title">
+            Tendencia de Inferencias
+        </div>
+        <div class="executive-chart-subtitle">
+            Volume ao longo do periodo
+        </div>
+        <div
+            id="executiveInferenceChart"
+            class="executive-chart"
+        ></div>
+    </div>
+
+    <div class="executive-chart-card">
+        <div class="executive-chart-title">
+            Tendencia de Latencia
+        </div>
+        <div class="executive-chart-subtitle">
+            Comportamento operacional
+        </div>
+        <div
+            id="executiveLatencyChart"
+            class="executive-chart"
+        ></div>
+    </div>
+
+    <div class="executive-chart-card">
+        <div class="executive-chart-title">
+            Tendencia de Fraude Prevista
+        </div>
+        <div class="executive-chart-subtitle">
+            Percentual previsto ao longo do periodo
+        </div>
+        <div
+            id="executiveFraudChart"
+            class="executive-chart"
+        ></div>
+    </div>
 </div>
 
 <div class="footer">
@@ -1939,6 +1983,7 @@ async function loadDashboard() {
 loadDashboard();
 </script>
 
+<script src="/executive/assets/charts.js"></script>
 </body>
 </html>
 """
@@ -2152,6 +2197,7 @@ h2 {
     }
 }
 </style>
+<link rel="stylesheet" href="/executive/assets/charts.css">
 </head>
 
 <body>
@@ -2385,7 +2431,44 @@ h2 {
     </tr>
 </table>
 
-<h2>7. Recomendação Executiva</h2>
+
+<!-- PHASE30_REPORT_CHARTS -->
+<h2>7. Tendencias Operacionais</h2>
+
+<div class="executive-charts-grid">
+    <div class="executive-chart-card">
+        <div class="executive-chart-title">
+            Inferencias
+        </div>
+        <div
+            id="executiveInferenceChart"
+            class="executive-chart"
+        ></div>
+    </div>
+
+    <div class="executive-chart-card">
+        <div class="executive-chart-title">
+            Latencia
+        </div>
+        <div
+            id="executiveLatencyChart"
+            class="executive-chart"
+        ></div>
+    </div>
+
+    <div class="executive-chart-card">
+        <div class="executive-chart-title">
+            Fraude Prevista
+        </div>
+        <div
+            id="executiveFraudChart"
+            class="executive-chart"
+        ></div>
+    </div>
+</div>
+
+<h2>8. Recomendacao Executiva</h2>
+
 
 <div
     id="recommendation"
@@ -2983,6 +3066,7 @@ async function loadReport() {
 loadReport();
 </script>
 
+<script src="/executive/assets/charts.js"></script>
 </body>
 </html>
 """
@@ -3008,3 +3092,50 @@ def executive_report() -> HTMLResponse:
     return HTMLResponse(
         content=REPORT_HTML
     )
+
+# PHASE30_EXECUTIVE_CHARTS
+@router.get(
+    "/executive/assets/charts.js",
+    include_in_schema=False,
+)
+def executive_charts_javascript() -> Response:
+    from pathlib import Path
+
+    content = (
+        Path(__file__)
+        .with_name(
+            "executive_charts.js"
+        )
+        .read_text(
+            encoding="utf-8"
+        )
+    )
+
+    return Response(
+        content=content,
+        media_type="application/javascript",
+    )
+
+
+@router.get(
+    "/executive/assets/charts.css",
+    include_in_schema=False,
+)
+def executive_charts_styles() -> Response:
+    from pathlib import Path
+
+    content = (
+        Path(__file__)
+        .with_name(
+            "executive_charts.css"
+        )
+        .read_text(
+            encoding="utf-8"
+        )
+    )
+
+    return Response(
+        content=content,
+        media_type="text/css",
+    )
+

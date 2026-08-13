@@ -609,3 +609,29 @@ Documentation:
 [`docs/executive-dashboard.md`](docs/executive-dashboard.md)
 
 <!-- PHASE29_EXECUTIVE_END -->
+
+<!-- PHASE30_ANALYTICS_START -->
+
+---
+
+## Executive Analytics and External Alerts
+
+The executive MLOps layer includes:
+
+- inference trend charts;
+- latency trend charts;
+- predicted fraud-rate trends;
+- SVG charts optimized for PDF;
+- external warning and critical alerts;
+- Slack-compatible webhook delivery;
+- scheduled GitHub Actions alert checks.
+
+External webhook secrets are never stored in the
+repository.
+
+Documentation:
+
+[`docs/executive-analytics-alerts.md`](docs/executive-analytics-alerts.md)
+
+<!-- PHASE30_ANALYTICS_END -->
+

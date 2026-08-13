@@ -1,0 +1,90 @@
+.executive-charts-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.executive-chart-card {
+    background: #ffffff;
+    border: 1px solid #e4e7ec;
+    border-radius: 14px;
+    padding: 18px;
+    break-inside: avoid;
+}
+
+.executive-chart-title {
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.executive-chart-subtitle {
+    color: #667085;
+    font-size: 11px;
+    margin-bottom: 12px;
+}
+
+.executive-chart {
+    width: 100%;
+    min-height: 210px;
+}
+
+.executive-chart svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.chart-axis {
+    stroke: #98a2b3;
+    stroke-width: 1;
+}
+
+.chart-grid {
+    stroke: #eaecf0;
+    stroke-width: 1;
+}
+
+.chart-line {
+    fill: none;
+    stroke: #175cd3;
+    stroke-width: 3;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.chart-label {
+    fill: #667085;
+    font-size: 10px;
+}
+
+.chart-empty {
+    min-height: 190px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #667085;
+    font-size: 12px;
+    border: 1px dashed #d0d5dd;
+    border-radius: 8px;
+}
+
+@media (max-width: 950px) {
+    .executive-charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    .executive-charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .executive-chart-card {
+        box-shadow: none;
+        page-break-inside: avoid;
+    }
+}

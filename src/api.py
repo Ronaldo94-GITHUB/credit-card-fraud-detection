@@ -5,25 +5,17 @@ from time import perf_counter
 from typing import Annotated
 
 import pandas as pd
-
-from fastapi import Depends
-from fastapi import FastAPI
-from fastapi import HTTPException
-from fastapi import Request
-
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import (
     CORSMiddleware,
 )
-
-from pydantic import BaseModel
-from pydantic import Field
+from pydantic import BaseModel, Field
 
 from src.audit import (
     get_recent_audit_events,
     initialize_audit_table,
     save_audit_event,
 )
-
 from src.database import (
     database_status,
     get_persistent_metrics,
@@ -31,25 +23,28 @@ from src.database import (
     initialize_database,
     save_inference_event,
 )
-
 from src.drift import (
     calculate_drift_status,
 )
-
+from src.ground_truth import (
+    get_ground_truth,
+    initialize_ground_truth_table,
+    save_ground_truth,
+)
 from src.metrics import (
     inference_metrics,
 )
-
 from src.mlops_alerts import (
     build_mlops_alerts,
 )
-
 from src.predict import (
     load_model_bundle,
     predict_dataframe,
     resolve_default_model_path,
 )
-
+from src.production_ground_truth_metrics import (
+    build_production_ground_truth_metrics,
+)
 from src.security import (
     create_request_id,
     get_client_key,
@@ -57,15 +52,12 @@ from src.security import (
     require_admin_api_key,
     security_status,
 )
-
 from src.statistical_drift import (
     analyze_statistical_drift,
 )
-
 from src.temporal_metrics import (
     build_temporal_metrics,
 )
-
 
 logging.basicConfig(
     level=logging.INFO,
@@ -121,6 +113,25 @@ app.add_middleware(
 
 initialize_database()
 initialize_audit_table()
+initialize_ground_truth_table()
+
+
+class GroundTruthRequest(BaseModel):
+    inference_event_id: int = Field(
+        ge=1
+    )
+    actual_label: int = Field(
+        ge=0,
+        le=1,
+    )
+    source: str | None = Field(
+        default=None,
+        max_length=100,
+    )
+    notes: str | None = Field(
+        default=None,
+        max_length=1000,
+    )
 
 
 class TransactionInput(BaseModel):
@@ -499,6 +510,100 @@ def admin_audit(
     return {
         "items": events,
     }
+
+
+@app.post("/ground-truth")
+def submit_ground_truth(
+    payload: GroundTruthRequest,
+    request: Request,
+    _: Annotated[
+        None,
+        Depends(require_admin_api_key),
+    ],
+):
+    try:
+        result = save_ground_truth(
+            inference_event_id=(
+                payload.inference_event_id
+            ),
+            actual_label=(
+                payload.actual_label
+            ),
+            source=payload.source,
+            notes=payload.notes,
+        )
+
+    except KeyError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=str(exc),
+        ) from exc
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=str(exc),
+        ) from exc
+
+    save_audit_event(
+        request_id=request.state.request_id,
+        event_type="ground_truth_update",
+        endpoint="/ground-truth",
+        method="POST",
+        status_code=200,
+        client_key=get_client_key(request),
+        details=(
+            "inference_event_id="
+            + str(payload.inference_event_id)
+            + "; actual_label="
+            + str(payload.actual_label)
+            + "; source="
+            + str(payload.source)
+        ),
+    )
+
+    return result
+
+
+@app.get("/ground-truth/{inference_event_id}")
+def read_ground_truth(
+    inference_event_id: int,
+    _: Annotated[
+        None,
+        Depends(require_admin_api_key),
+    ],
+):
+    result = get_ground_truth(
+        inference_event_id
+    )
+
+    if result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Ground truth not found.",
+        )
+
+    return result
+
+
+@app.get("/metrics/ground-truth")
+def ground_truth_metrics(
+    _: Annotated[
+        None,
+        Depends(require_admin_api_key),
+    ],
+    period: str = "7d",
+):
+    try:
+        return build_production_ground_truth_metrics(
+            period
+        )
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=str(exc),
+        ) from exc
 
 
 @app.post(

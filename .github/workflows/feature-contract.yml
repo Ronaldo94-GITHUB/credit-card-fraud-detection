@@ -1,0 +1,79 @@
+﻿name: Feature Contract
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+    paths:
+      - "src/feature_store.py"
+      - "src/preprocessing.py"
+      - "src/predict.py"
+      - "src/retraining_dataset.py"
+      - "models/feature_registry.json"
+      - "scripts/generate_feature_registry.py"
+      - "scripts/validate_feature_contract.py"
+      - "tests/test_feature_store.py"
+
+  pull_request:
+    paths:
+      - "src/feature_store.py"
+      - "src/preprocessing.py"
+      - "src/predict.py"
+      - "src/retraining_dataset.py"
+      - "models/feature_registry.json"
+      - "scripts/generate_feature_registry.py"
+      - "scripts/validate_feature_contract.py"
+      - "tests/test_feature_store.py"
+
+permissions:
+  contents: read
+
+jobs:
+
+  validate-feature-contract:
+
+    name: Validate Feature Contract
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 20
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Ruff
+        run: |
+          python -m ruff check src tests scripts
+
+      - name: Feature store tests
+        run: |
+          python -m pytest -q tests/test_feature_store.py
+
+      - name: Validate active model contract
+        run: |
+          python scripts/validate_feature_contract.py
+
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-contract-validation
+          path: reports/runtime/feature_contract_validation.json
+          if-no-files-found: warn
+          retention-days: 30

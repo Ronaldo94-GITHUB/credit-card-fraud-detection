@@ -42,6 +42,9 @@ from src.predict import (
     predict_dataframe,
     resolve_default_model_path,
 )
+from src.production_explainability_api import (
+    router as production_explainability_router,
+)
 from src.production_ground_truth_metrics import (
     build_production_ground_truth_metrics,
 )
@@ -114,6 +117,7 @@ app.add_middleware(
 initialize_database()
 initialize_audit_table()
 initialize_ground_truth_table()
+app.include_router(production_explainability_router)
 
 
 class GroundTruthRequest(BaseModel):

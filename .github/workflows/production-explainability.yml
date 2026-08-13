@@ -1,0 +1,82 @@
+﻿name: Production Explainability
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+    paths:
+      - "src/production_explainability.py"
+      - "src/production_explainability_api.py"
+      - "src/feature_store.py"
+      - "src/api.py"
+      - "scripts/validate_production_explainability.py"
+      - "tests/test_production_explainability.py"
+      - "tests/test_production_explainability_model.py"
+      - "tests/test_production_explainability_api.py"
+
+  pull_request:
+    paths:
+      - "src/production_explainability.py"
+      - "src/production_explainability_api.py"
+      - "src/feature_store.py"
+      - "src/api.py"
+      - "scripts/validate_production_explainability.py"
+      - "tests/test_production_explainability.py"
+      - "tests/test_production_explainability_model.py"
+      - "tests/test_production_explainability_api.py"
+
+permissions:
+  contents: read
+
+jobs:
+
+  explainability:
+
+    name: Explainability Validation
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 20
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Ruff
+        run: |
+          python -m ruff check src tests scripts
+
+      - name: Explainability tests
+        run: |
+          python -m pytest -q \
+            tests/test_production_explainability.py \
+            tests/test_production_explainability_model.py \
+            tests/test_production_explainability_api.py
+
+      - name: Validate active model explainability
+        run: |
+          python scripts/validate_production_explainability.py
+
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: explainability-validation
+          path: reports/runtime/explainability_validation.json
+          if-no-files-found: warn
+          retention-days: 30

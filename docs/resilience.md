@@ -53,3 +53,47 @@ damaged during these tests.
 
 These tests demonstrate that failure scenarios are treated as
 part of system design rather than exceptional manual cases.
+
+## Prediction-path resilience
+
+The `/predict` execution path is also validated against
+transient and internal failures.
+
+Covered scenarios include:
+
+- inference engine failure;
+- model metadata failure;
+- inference persistence failure;
+- audit persistence failure;
+- slow inference;
+- recovery after a transient persistence failure;
+- protection against leaking internal exception details.
+
+### Failure contract
+
+Unexpected prediction-path failures return:
+
+`HTTP 500`
+
+with the public message:
+
+`Prediction failed.`
+
+Internal exception details remain in server-side logs rather
+than being exposed in the HTTP response.
+
+### Recovery behavior
+
+A transient dependency failure in one request does not place
+the application in a permanently failed state.
+
+A subsequent valid request can execute normally after the
+dependency becomes available again.
+
+### Safety
+
+These tests use mocked failures only.
+
+No production database is disconnected, no production model
+is removed, and no production transaction is intentionally
+corrupted.

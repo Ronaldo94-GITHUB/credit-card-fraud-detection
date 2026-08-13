@@ -49,7 +49,9 @@ O modelo identificou 62 fraudes corretamente, com 15 falsos positivos e 12 falso
 
 **Best CV Average Precision:** `0.848916`
 
-## Arquitetura
+## Production MLOps Architecture
+
+### Arquitetura
 
 ```mermaid
 flowchart LR

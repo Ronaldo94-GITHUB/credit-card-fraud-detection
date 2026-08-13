@@ -45,7 +45,19 @@
 
         for (const key of candidates) {
             if (key in item) {
-                const value = Number(item[key]);
+                const rawValue = item[key];
+
+                if (
+                    rawValue === null
+                    || rawValue === undefined
+                    || rawValue === ""
+                ) {
+                    return null;
+                }
+
+                const value = Number(
+                    rawValue
+                );
 
                 if (!Number.isNaN(value)) {
                     return value;
@@ -356,6 +368,236 @@
     }
 
 
+    function displayPeriodLabel(
+        period
+    ) {
+        const labels = {
+            "24h": "24 horas",
+            "7d": "7 dias",
+            "30d": "30 dias",
+        };
+
+        return (
+            labels[period]
+            ?? period
+        );
+    }
+
+
+    function periodConfiguration(
+        period
+    ) {
+        const configurations = {
+            "24h": {
+                hours: 24,
+                bucketHours: 2,
+            },
+            "7d": {
+                hours: 168,
+                bucketHours: 12,
+            },
+            "30d": {
+                hours: 720,
+                bucketHours: 24,
+            },
+        };
+
+        return (
+            configurations[period]
+            ?? configurations["7d"]
+        );
+    }
+
+
+    function pointTimestamp(
+        item
+    ) {
+        const candidates = [
+            "timestamp",
+            "bucket",
+            "time",
+            "datetime",
+            "created_at",
+        ];
+
+        for (const key of candidates) {
+            if (
+                item
+                && key in item
+                && item[key]
+            ) {
+                const parsed = new Date(
+                    item[key]
+                );
+
+                if (
+                    !Number.isNaN(
+                        parsed.getTime()
+                    )
+                ) {
+                    return parsed;
+                }
+            }
+        }
+
+        return null;
+    }
+
+
+    function bucketTimestamp(
+        date,
+        bucketHours
+    ) {
+        const bucketMs = (
+            bucketHours
+            * 60
+            * 60
+            * 1000
+        );
+
+        const timestamp = (
+            Math.floor(
+                date.getTime()
+                / bucketMs
+            )
+            * bucketMs
+        );
+
+        return timestamp;
+    }
+
+
+    function buildCompleteTimeline(
+        rawPoints,
+        period
+    ) {
+        const config = (
+            periodConfiguration(
+                period
+            )
+        );
+
+        const bucketHours = (
+            config.bucketHours
+        );
+
+        const bucketMs = (
+            bucketHours
+            * 60
+            * 60
+            * 1000
+        );
+
+        const bucketCount = (
+            Math.ceil(
+                config.hours
+                / bucketHours
+            )
+        );
+
+        const eventMap = new Map();
+
+        for (
+            const point
+            of rawPoints
+        ) {
+            const timestamp = (
+                pointTimestamp(
+                    point
+                )
+            );
+
+            if (!timestamp) {
+                continue;
+            }
+
+            const key = (
+                bucketTimestamp(
+                    timestamp,
+                    bucketHours
+                )
+            );
+
+            eventMap.set(
+                key,
+                point
+            );
+        }
+
+        const now = new Date();
+
+        const lastBucket = (
+            bucketTimestamp(
+                now,
+                bucketHours
+            )
+        );
+
+        const firstBucket = (
+            lastBucket
+            - (
+                (bucketCount - 1)
+                * bucketMs
+            )
+        );
+
+        const result = [];
+
+        for (
+            let index = 0;
+            index < bucketCount;
+            index += 1
+        ) {
+            const timestamp = (
+                firstBucket
+                + (
+                    index
+                    * bucketMs
+                )
+            );
+
+            const existing = (
+                eventMap.get(
+                    timestamp
+                )
+            );
+
+            if (existing) {
+                result.push(
+                    existing
+                );
+
+                continue;
+            }
+
+            result.push(
+                {
+                    timestamp:
+                        new Date(
+                            timestamp
+                        ).toISOString(),
+
+                    count: 0,
+
+                    suspicious_count: 0,
+
+                    suspicious_rate: null,
+
+                    average_probability:
+                        null,
+
+                    average_latency_ms:
+                        null,
+
+                    empty_bucket: true,
+                }
+            );
+        }
+
+        return result;
+    }
+
+
     async function renderExecutiveCharts() {
         const inferenceChart = (
             document.getElementById(
@@ -390,6 +632,31 @@
             + encodeURIComponent(period)
         );
 
+        [
+            inferenceChart,
+            latencyChart,
+            fraudChart,
+        ].forEach(
+            (element) => {
+                if (element) {
+                    element.setAttribute(
+                        "data-chart-period",
+                        period
+                    );
+
+                    element.setAttribute(
+                        "aria-label",
+                        (
+                            "Periodo do grafico: "
+                            + displayPeriodLabel(
+                                period
+                            )
+                        )
+                    );
+                }
+            }
+        );
+
         if (!data) {
             [
                 inferenceChart,
@@ -406,11 +673,11 @@
             return;
         }
 
-        const points = recursiveFindArray(
+        const rawPoints = recursiveFindArray(
             data
         );
 
-        if (!points) {
+        if (!rawPoints) {
             [
                 inferenceChart,
                 latencyChart,
@@ -425,6 +692,13 @@
 
             return;
         }
+
+        const points = (
+            buildCompleteTimeline(
+                rawPoints,
+                period
+            )
+        );
 
         const labels = points.map(
             (item, index) => (

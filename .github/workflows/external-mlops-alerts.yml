@@ -2,8 +2,6 @@ name: External MLOps Alerts
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "17,47 * * * *"
 
 jobs:
   mlops-alert:

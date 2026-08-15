@@ -48,6 +48,12 @@ from src.production_explainability_api import (
 from src.production_ground_truth_metrics import (
     build_production_ground_truth_metrics,
 )
+from src.reliability import (
+    PERSISTENCE_POLICY,
+    PredictionTimeoutError,
+    prediction_timeout_seconds,
+    run_with_timeout,
+)
 from src.security import (
     create_request_id,
     get_client_key,
@@ -266,7 +272,7 @@ def root():
         ),
         "status": "online",
         "docs": "/docs",
-        "version": "0.6.0",
+        "version": "0.7.0",
     }
 
 
@@ -314,6 +320,14 @@ def readiness():
                 bundle["threshold"]
             ),
             "database": db,
+            "reliability": {
+                "prediction_timeout_seconds": (
+                    prediction_timeout_seconds()
+                ),
+                "persistence_policy": (
+                    PERSISTENCE_POLICY
+                ),
+            },
         }
 
     except FileNotFoundError as exc:
@@ -646,8 +660,13 @@ def predict(
             [payload]
         )
 
-        result = predict_dataframe(
-            frame
+        result = run_with_timeout(
+            lambda: predict_dataframe(
+                frame
+            ),
+            timeout_seconds=(
+                prediction_timeout_seconds()
+            ),
         )
 
         bundle = load_model_bundle()
@@ -754,6 +773,20 @@ def predict(
             model_name=model_name,
             threshold=threshold,
         )
+
+    except PredictionTimeoutError as exc:
+        logger.warning(
+            "prediction_timeout "
+            "request_id=%s",
+            request.state.request_id,
+        )
+
+        raise HTTPException(
+            status_code=504,
+            detail=(
+                "Prediction timeout."
+            ),
+        ) from exc
 
     except HTTPException:
         raise

@@ -2,7 +2,6 @@
 
 from src.api import app
 
-
 client = TestClient(app)
 
 

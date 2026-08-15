@@ -4,7 +4,6 @@ from statistics import mean
 
 from src.database import get_recent_events
 
-
 DRIFT_WINDOW = 50
 
 PROBABILITY_WARNING = 0.15

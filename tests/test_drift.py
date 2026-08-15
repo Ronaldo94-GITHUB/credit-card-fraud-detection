@@ -1,4 +1,4 @@
-﻿import src.drift as drift
+﻿from src import drift
 
 
 def test_drift_without_data(

@@ -3,12 +3,10 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
-
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
@@ -144,7 +142,7 @@ def save_inference_event(
     threshold: float,
 ) -> None:
     created_at = datetime.now(
-        timezone.utc
+        UTC
     )
 
     values = (
@@ -387,7 +385,7 @@ def database_status() -> dict[str, Any]:
             ),
         }
 
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         return {
             "available": False,
             "storage": (
@@ -413,7 +411,7 @@ def get_events_since(
     )
 
     cutoff = datetime.now(
-        timezone.utc
+        UTC
     ) - timedelta(hours=hours)
 
     with get_connection() as conn:

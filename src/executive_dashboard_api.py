@@ -204,6 +204,23 @@ button,
     font-size: 12px;
 }
 
+.kpi-value.no-data {
+    color: var(--muted);
+    font-size: 20px;
+}
+
+.kpi-value.status-warning {
+    color: var(--warning);
+}
+
+.kpi-value.status-danger {
+    color: var(--danger);
+}
+
+.kpi-value.status-success {
+    color: var(--success);
+}
+
 .grid-two {
     display: grid;
     grid-template-columns:
@@ -473,24 +490,10 @@ button,
 </div>
 
 <div class="kpis">
-    <div class="card">
-        <div class="kpi-label">
-            MODELO ATIVO
-        </div>
-        <div
-            id="modelVersion"
-            class="kpi-value"
-        >
-            --
-        </div>
-        <div class="kpi-detail">
-            versão em produção
-        </div>
-    </div>
 
     <div class="card">
         <div class="kpi-label">
-            INFERÊNCIAS
+            TRANSA??ES ANALISADAS
         </div>
         <div
             id="inferenceCount"
@@ -499,13 +502,28 @@ button,
             --
         </div>
         <div class="kpi-detail">
-            volume observado
+            volume no período
         </div>
     </div>
 
     <div class="card">
         <div class="kpi-label">
-            FRAUDE PREVISTA
+            TRANSA??ES SUSPEITAS
+        </div>
+        <div
+            id="suspiciousCount"
+            class="kpi-value"
+        >
+            --
+        </div>
+        <div class="kpi-detail">
+            classificadas pelo modelo
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="kpi-label">
+            TAXA SUSPEITA
         </div>
         <div
             id="fraudRate"
@@ -520,7 +538,22 @@ button,
 
     <div class="card">
         <div class="kpi-label">
-            LATÊNCIA
+            RECALL REAL
+        </div>
+        <div
+            id="topRecall"
+            class="kpi-value"
+        >
+            --
+        </div>
+        <div class="kpi-detail">
+            depende de Ground Truth
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="kpi-label">
+            LAT?NCIA M?DIA
         </div>
         <div
             id="latency"
@@ -529,7 +562,7 @@ button,
             --
         </div>
         <div class="kpi-detail">
-            sinal operacional
+            tempo de inferência
         </div>
     </div>
 
@@ -548,20 +581,149 @@ button,
         </div>
     </div>
 
+</div>
+
+<!-- FRAUD_OPERATIONS_SECTION -->
+<div class="grid-two">
+
     <div class="card">
-        <div class="kpi-label">
-            ALERTAS
+        <div class="section-title">
+            Exposição Financeira
         </div>
-        <div
-            id="alerts"
-            class="kpi-value"
-        >
-            --
+
+        <div class="status-line">
+            <span class="status-label">
+                Valor analisado
+            </span>
+            <span
+                id="fraudTotalAmount"
+                class="status-value"
+            >
+                --
+            </span>
         </div>
-        <div class="kpi-detail">
-            sinais MLOps ativos
+
+        <div class="status-line">
+            <span class="status-label">
+                Valor suspeito
+            </span>
+            <span
+                id="fraudSuspiciousAmount"
+                class="status-value"
+            >
+                --
+            </span>
+        </div>
+
+        <div class="status-line">
+            <span class="status-label">
+                Fraude confirmada
+            </span>
+            <span
+                id="confirmedFraudAmount"
+                class="status-value"
+            >
+                --
+            </span>
+        </div>
+
+        <div class="status-line">
+            <span class="status-label">
+                Varia??o valor suspeito
+            </span>
+            <span
+                id="suspiciousAmountDelta"
+                class="status-value"
+            >
+                --
+            </span>
+        </div>
+
+        <div class="status-line">
+            <span class="status-label">
+                Casos pendentes
+            </span>
+            <span
+                id="pendingFraudCases"
+                class="status-value"
+            >
+                --
+            </span>
         </div>
     </div>
+
+    <div class="card">
+        <div class="section-title">
+            Operação Antifraude
+        </div>
+
+        <div class="status-line">
+            <span class="status-label">
+                Risco baixo
+            </span>
+            <span
+                id="riskLow"
+                class="status-value"
+            >
+                --
+            </span>
+        </div>
+
+        <div class="status-line">
+            <span class="status-label">
+                Risco médio
+            </span>
+            <span
+                id="riskMedium"
+                class="status-value"
+            >
+                --
+            </span>
+        </div>
+
+        <div class="status-line">
+            <span class="status-label">
+                Risco alto
+            </span>
+            <span
+                id="riskHigh"
+                class="status-value"
+            >
+                --
+            </span>
+        </div>
+
+        <div class="status-line">
+            <span class="status-label">
+                Risco crítico
+            </span>
+            <span
+                id="riskCritical"
+                class="status-value"
+            >
+                --
+            </span>
+        </div>
+
+        <div class="status-line">
+            <span class="status-label">
+                Falso positivo
+            </span>
+            <span
+                id="falsePositiveRate"
+                class="status-value"
+            >
+                --
+            </span>
+        </div>
+
+        <div class="raw-note">
+            Estrat?gia hábrida:
+            Machine Learning + regras
+            de decis?o + revisão humana.
+        </div>
+    </div>
+
 </div>
 
 <div class="grid-two">
@@ -909,7 +1071,7 @@ button,
     Credit Card Fraud Detection -
     Executive MLOps Dashboard
     <br>
-    Dados agregados. Nenhuma transa??o individual ?
+    Dados agregados. Nenhuma transação individual ?
     exibida nesta visão executiva.
 </div>
 
@@ -1096,6 +1258,27 @@ function formatNumber(
 }
 
 
+function formatCurrency(
+    value
+) {
+    const number = numberValue(
+        value
+    );
+
+    if (number === null) {
+        return "--";
+    }
+
+    return number.toLocaleString(
+        "pt-BR",
+        {
+            style: "currency",
+            currency: "BRL",
+        }
+    );
+}
+
+
 function formatPercent(
     value
 ) {
@@ -1124,6 +1307,80 @@ function formatPercent(
         )
         + "%"
     );
+}
+
+
+function humanizeDriftStatus(
+    value
+) {
+    const normalized = String(
+        value ?? ""
+    ).toLowerCase();
+
+    if (
+        normalized.includes(
+            "insufficient"
+        )
+    ) {
+        return "Dados insuficientes";
+    }
+
+    if (
+        normalized.includes(
+            "critical"
+        )
+    ) {
+        return "Cr?tico";
+    }
+
+    if (
+        normalized.includes(
+            "warning"
+        )
+    ) {
+        return "Aten??o";
+    }
+
+    if (
+        normalized.includes(
+            "stable"
+        )
+        || normalized.includes(
+            "ok"
+        )
+    ) {
+        return "Est?vel";
+    }
+
+    return (
+        value
+        ?? "Indispon?vel"
+    );
+}
+
+
+function setKpiClass(
+    id,
+    state
+) {
+    const element = document.getElementById(
+        id
+    );
+
+    if (!element) {
+        return;
+    }
+
+    element.classList.remove(
+        "no-data",
+        "status-warning",
+        "status-danger",
+        "status-success"
+    );
+
+    if (state) {
+        element.classList.add(state);
+    }
 }
 
 
@@ -1379,6 +1636,27 @@ function buildSummary(
     context
 ) {
     const problems = [];
+    const observations = [];
+
+    const inferenceCount = numberValue(
+        context.inferenceCount
+    );
+
+    const fraudRate = numberValue(
+        context.fraudRate
+    );
+
+    const latency = numberValue(
+        context.averageLatency
+    );
+
+    const groundTruthCount = numberValue(
+        context.groundTruthCount
+    );
+
+    const recall = numberValue(
+        context.recall
+    );
 
     if (
         context.healthOk === false
@@ -1389,12 +1667,20 @@ function buildSummary(
     }
 
     if (
+        context.readinessOk === false
+    ) {
+        problems.push(
+            "servi?o não est? pronto para inferência"
+        );
+    }
+
+    if (
         context.driftStatus.includes(
             "critical"
         )
     ) {
         problems.push(
-            "drift crítico"
+            "drift estat?stico crítico"
         );
     }
 
@@ -1407,60 +1693,198 @@ function buildSummary(
         );
     }
 
-    let message;
+    let opening;
 
     if (
-        problems.length === 0
+        inferenceCount === 0
     ) {
-        message = (
-            "A plataforma apresenta sinais "
-            + "operacionais estáveis no período "
-            + currentPeriod
-            + ". Não foram identificados "
-            + "indicadores executivos críticos "
-            + "pelos dados disponíveis."
+        opening = (
+            "N?o houve transações analisadas em "
+            + periodLabel(currentPeriod)
+                .toLowerCase()
+            + ". Por isso, não ? poss?vel avaliar "
+            + "o comportamento recente de fraude "
+            + "com confian?a."
+        );
+    } else if (
+        inferenceCount !== null
+    ) {
+        opening = (
+            formatNumber(
+                inferenceCount
+            )
+            + " transação(?es) foram analisadas em "
+            + periodLabel(currentPeriod)
+                .toLowerCase()
+            + "."
         );
     } else {
-        message = (
-            "O período "
-            + currentPeriod
-            + " requer atenção executiva devido a: "
-            + problems.join(", ")
-            + ". Recomenda-se revisar os sinais "
-            + "técnicos antes de qualquer alteração "
-            + "no modelo em produção."
+        opening = (
+            "O volume de transações do período "
+            + "não est? dispon?vel."
         );
     }
+
+    if (
+        inferenceCount !== null
+        && inferenceCount > 0
+        && fraudRate !== null
+    ) {
+        observations.push(
+            "A taxa de transações classificadas "
+            + "como suspeitas foi de "
+            + formatPercent(fraudRate)
+        );
+    }
+
+    if (
+        inferenceCount !== null
+        && inferenceCount > 0
+        && latency !== null
+    ) {
+        observations.push(
+            "A latência média foi de "
+            + formatMs(latency)
+        );
+    }
+
+    if (
+        context.driftStatus.includes(
+            "insufficient"
+        )
+    ) {
+        observations.push(
+            "Ainda não há amostras suficientes "
+            + "para uma avaliação estatística "
+            + "confiável de drift"
+        );
+    } else if (
+        context.driftStatus.includes(
+            "warning"
+        )
+    ) {
+        observations.push(
+            "O drift apresenta sinais de aten??o"
+        );
+    } else if (
+        context.driftStatus.includes(
+            "critical"
+        )
+    ) {
+        observations.push(
+            "Foi identificado drift crítico"
+        );
+    }
+
+    if (
+        groundTruthCount === null
+        || groundTruthCount === 0
+    ) {
+        observations.push(
+            "Ainda não há Ground Truth suficiente "
+            + "para confirmar a performance real "
+            + "do modelo"
+        );
+    } else if (
+        recall !== null
+    ) {
+        observations.push(
+            "O recall observado com Ground Truth "
+            + "? de "
+            + formatPercent(recall)
+        );
+    }
+
+    let operationalStatus = "";
+
+    if (
+        problems.length > 0
+    ) {
+        operationalStatus = (
+            " Aten??o operacional: "
+            + problems.join(", ")
+            + "."
+        );
+    } else if (
+        inferenceCount !== 0
+    ) {
+        operationalStatus = (
+            " N?o foram identificados sinais "
+            + "executivos críticos."
+        );
+    }
+
+    const detail = (
+        observations.length > 0
+        ? " " + observations.join(". ") + "."
+        : ""
+    );
 
     document.getElementById(
         "summary"
     ).innerHTML = (
-        "<h2>Resumo Executivo</h2>"
+        "<h2>Resumo Inteligente</h2>"
         + "<p>"
-        + message
+        + opening
+        + operationalStatus
+        + detail
         + "</p>"
     );
 
+    let recommendation;
+
+    if (
+        problems.length > 0
+    ) {
+        recommendation = (
+            "Priorizar investiga??o operacional "
+            + "dos alertas e do drift antes de "
+            + "qualquer promo??o ou retraining."
+        );
+    } else if (
+        inferenceCount === 0
+    ) {
+        recommendation = (
+            "Aguardar novas transações antes de "
+            + "interpretar estabilidade, fraude "
+            + "prevista ou necessidade de "
+            + "retraining."
+        );
+    } else if (
+        groundTruthCount === null
+        || groundTruthCount < 30
+    ) {
+        recommendation = (
+            "Manter o modelo atual, continuar "
+            + "coletando Ground Truth e ampliar "
+            + "a amostra antes de decidir sobre "
+            + "promo??o ou retraining."
+        );
+    } else if (
+        context.driftStatus.includes(
+            "warning"
+        )
+    ) {
+        recommendation = (
+            "Manter o champion atual e acompanhar "
+            + "o drift. Se o sinal persistir, "
+            + "avaliar um challenger pelo fluxo "
+            + "governado."
+        );
+    } else {
+        recommendation = (
+            "Manter o modelo atual e continuar "
+            + "o monitoramento. Os sinais "
+            + "dispon?veis não indicam necessidade "
+            + "de altera??o imediata."
+        );
+    }
+
     setText(
         "recommendation",
-        problems.length === 0
-            ? (
-                "Manter o modelo atual e continuar "
-                + "o monitoramento. Promoção ou "
-                + "retraining só devem ocorrer "
-                + "pelos fluxos governados já "
-                + "existentes no projeto."
-            )
-            : (
-                "Investigar drift, alertas e "
-                + "performance antes de promover "
-                + "ou retreinar um modelo. "
-                + "Preservar o champion atual até "
-                + "existir evidência suficiente."
-            )
+        recommendation
     );
 }
-
 
 function renderAlerts(
     data
@@ -1657,7 +2081,7 @@ async function loadDashboard() {
                 + currentPeriod
             ),
             safeFetch(
-                "/metrics/ground-truth?period="
+                "/metrics/ground-trutháperiod="
                 + currentPeriod
             ),
         ]
@@ -1681,6 +2105,32 @@ async function loadDashboard() {
 
     const gtData = (
         groundTruth.data ?? {}
+    );
+
+
+    const fraudOperations = await safeFetch(
+        "/fraud-operations/summary?period="
+        + currentPeriod
+    );
+
+    const fraudData = (
+        fraudOperations.data ?? {}
+    );
+
+    const fraudCurrent = (
+        fraudData.current ?? {}
+    );
+
+    const fraudComparison = (
+        fraudData.comparison ?? {}
+    );
+
+    const fraudRiskBands = (
+        fraudData.risk_bands ?? {}
+    );
+
+    const fraudQueue = (
+        fraudData.queue ?? {}
     );
 
     const modelVersion = pick(
@@ -1778,6 +2228,38 @@ async function loadDashboard() {
             ]
         )
         ?? fraudRateValue
+    );
+
+
+    const suspiciousCount = (
+        numberValue(
+            periodInferenceCount
+        ) !== null
+        && numberValue(
+            periodFraudRateValue
+        ) !== null
+        ? Math.round(
+            numberValue(
+                periodInferenceCount
+            )
+            * (
+                Math.abs(
+                    numberValue(
+                        periodFraudRateValue
+                    )
+                ) <= 1
+                ? numberValue(
+                    periodFraudRateValue
+                )
+                : (
+                    numberValue(
+                        periodFraudRateValue
+                    )
+                    / 100
+                )
+            )
+        )
+        : null
     );
 
     const averageLatencyValue = pick(
@@ -1965,6 +2447,23 @@ async function loadDashboard() {
         )
     );
 
+
+    setText(
+        "suspiciousCount",
+        suspiciousCount !== null
+            ? formatNumber(
+                suspiciousCount
+            )
+            : "--"
+    );
+
+    setText(
+        "topRecall",
+        formatPercent(
+            gtRecall
+        )
+    );
+
     setText(
         "latency",
         formatMs(
@@ -2009,8 +2508,44 @@ async function loadDashboard() {
 
     setText(
         "drift",
-        driftStatusValue
+        humanizeDriftStatus(
+            driftStatusValue
+        )
     );
+
+    if (
+        driftStatusValue.toLowerCase().includes(
+            "critical"
+        )
+    ) {
+        setKpiClass(
+            "drift",
+            "status-danger"
+        );
+    } else if (
+        driftStatusValue.toLowerCase().includes(
+            "warning"
+        )
+    ) {
+        setKpiClass(
+            "drift",
+            "status-warning"
+        );
+    } else if (
+        driftStatusValue.toLowerCase().includes(
+            "stable"
+        )
+    ) {
+        setKpiClass(
+            "drift",
+            "status-success"
+        );
+    } else {
+        setKpiClass(
+            "drift",
+            "no-data"
+        );
+    }
 
     setBadge(
         "driftStatus",
@@ -2060,6 +2595,87 @@ async function loadDashboard() {
         )
     );
 
+
+    setText(
+        "fraudTotalAmount",
+        formatCurrency(
+            fraudCurrent.total_amount
+        )
+    );
+
+    setText(
+        "fraudSuspiciousAmount",
+        formatCurrency(
+            fraudCurrent.suspicious_amount
+        )
+    );
+
+    setText(
+        "confirmedFraudAmount",
+        formatCurrency(
+            fraudCurrent.confirmed_fraud_amount
+        )
+    );
+
+    setText(
+        "suspiciousAmountDelta",
+        fraudComparison.suspicious_amount_pct
+            !== null
+            && fraudComparison.suspicious_amount_pct
+            !== undefined
+            ? (
+                formatNumber(
+                    fraudComparison
+                        .suspicious_amount_pct,
+                    1
+                )
+                + "%"
+            )
+            : "--"
+    );
+
+    setText(
+        "pendingFraudCases",
+        formatNumber(
+            fraudQueue.pending_cases
+        )
+    );
+
+    setText(
+        "riskLow",
+        formatNumber(
+            fraudRiskBands.low
+        )
+    );
+
+    setText(
+        "riskMedium",
+        formatNumber(
+            fraudRiskBands.medium
+        )
+    );
+
+    setText(
+        "riskHigh",
+        formatNumber(
+            fraudRiskBands.high
+        )
+    );
+
+    setText(
+        "riskCritical",
+        formatNumber(
+            fraudRiskBands.critical
+        )
+    );
+
+    setText(
+        "falsePositiveRate",
+        formatPercent(
+            fraudCurrent.false_positive_rate
+        )
+    );
+
     if (
         groundTruth.status === 401
         || groundTruth.status === 403
@@ -2105,9 +2721,20 @@ async function loadDashboard() {
     buildSummary(
         {
             healthOk: health.ok,
+            readinessOk: readiness.ok,
             driftStatus:
                 driftStatusValue.toLowerCase(),
             criticalAlerts,
+            inferenceCount:
+                periodInferenceCount,
+            fraudRate:
+                periodFraudRateValue,
+            averageLatency:
+                periodAverageLatencyValue,
+            groundTruthCount:
+                gtCount,
+            recall:
+                gtRecall,
         }
     );
 
@@ -2923,7 +3550,7 @@ async function loadReport() {
                 + period
             ),
             safeFetch(
-                "/metrics/ground-truth?period="
+                "/metrics/ground-trutháperiod="
                 + period
             ),
         ]

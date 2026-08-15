@@ -1,10 +1,8 @@
-import os
 
 import pytest
-
 from fastapi import HTTPException
 
-import src.security as security
+from src import security
 
 
 def test_request_id_is_created():

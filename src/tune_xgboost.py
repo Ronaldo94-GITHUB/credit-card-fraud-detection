@@ -1,14 +1,12 @@
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import joblib
 import pandas as pd
-
 from sklearn.model_selection import (
     RandomizedSearchCV,
     StratifiedKFold,
 )
-
 from xgboost import XGBClassifier
 
 from src.config import (
@@ -20,17 +18,14 @@ from src.config import (
     TUNED_XGBOOST_MODEL_PATH,
     TUNING_RESULTS_PATH,
 )
-
 from src.data_loader import (
     load_credit_card_data,
     validate_dataset,
 )
-
 from src.evaluate import (
     evaluate_probabilities,
     optimize_threshold,
 )
-
 from src.preprocessing import (
     add_engineered_features,
     split_dataset,
@@ -277,7 +272,7 @@ def main():
         )
     )
 
-    print("")
+    print()
     print("=" * 60)
     print("FINAL TEST RESULTS")
     print("=" * 60)
@@ -332,7 +327,7 @@ def main():
     metadata = {
         "trained_at_utc": (
             datetime.now(
-                timezone.utc
+                UTC
             ).isoformat()
         ),
         "algorithm": "XGBoost",
@@ -376,7 +371,7 @@ def main():
         encoding="utf-8",
     )
 
-    print("")
+    print()
     print(
         "TUNED_MODEL_SAVED=True"
     )

@@ -1,0 +1,59 @@
+﻿name: Production Smoke Test
+
+on:
+  workflow_dispatch:
+
+  workflow_run:
+    workflows:
+      - Production CI
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-smoke-main
+  cancel-in-progress: true
+
+jobs:
+
+  production-smoke:
+    name: Production Smoke
+
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+      url: https://credit-card-fraud-detection-v5li.onrender.com
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Wait for production deployment
+        shell: bash
+        run: |
+          echo "Waiting briefly for Render deployment..."
+          sleep 30
+
+      - name: Run production smoke test
+        run: |
+          python scripts/production_smoke_test.py
+
+      - name: Production verification complete
+        run: |
+          echo "PRODUCTION_DEPLOYMENT_VERIFIED=True"
+          echo "PRODUCTION_SMOKE_OK=True"

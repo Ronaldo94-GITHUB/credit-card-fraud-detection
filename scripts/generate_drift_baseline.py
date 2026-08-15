@@ -8,7 +8,6 @@ import pandas as pd
 
 from src.predict import predict_dataframe
 
-
 DATASET_PATH = Path("data/creditcard.csv")
 OUTPUT_PATH = Path("reports/drift_baseline.json")
 

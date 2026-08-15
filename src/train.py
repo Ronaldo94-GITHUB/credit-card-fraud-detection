@@ -1,5 +1,5 @@
 ﻿import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import joblib
 import pandas as pd
@@ -178,7 +178,7 @@ def main():
     thresholds = {}
 
     for model_name, model in models.items():
-        print("")
+        print()
         print(
             "------------------------------------------"
         )
@@ -336,7 +336,7 @@ def main():
     metadata = {
         "trained_at_utc": (
             datetime.now(
-                timezone.utc
+                UTC
             ).isoformat()
         ),
         "dataset_rows": len(df),
@@ -368,7 +368,7 @@ def main():
         encoding="utf-8",
     )
 
-    print("")
+    print()
     print(
         "=========================================="
     )

@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from datetime import datetime
-from datetime import timezone
+from datetime import UTC, datetime
 from typing import Any
 
-from src.database import get_connection
-from src.database import is_postgres
+from src.database import get_connection, is_postgres
 
 
 def initialize_audit_table() -> None:
@@ -83,7 +81,7 @@ def save_audit_event(
     details: str | None = None,
 ) -> None:
     created_at = datetime.now(
-        timezone.utc
+        UTC
     )
 
     values = (

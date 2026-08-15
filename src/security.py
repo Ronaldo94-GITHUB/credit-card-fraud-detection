@@ -1,19 +1,14 @@
 from __future__ import annotations
 
-import hashlib
 import os
 import secrets
 import time
 import uuid
-
 from collections import defaultdict
 from dataclasses import dataclass
 from threading import Lock
 
-from fastapi import Header
-from fastapi import HTTPException
-from fastapi import Request
-
+from fastapi import Header, HTTPException, Request
 
 ADMIN_API_KEY_ENV = "ADMIN_API_KEY"
 
@@ -210,23 +205,9 @@ def security_status() -> dict:
         "",
     ).strip()
 
-    fingerprint = (
-        hashlib.sha256(
-            admin_key.encode("utf-8")
-        ).hexdigest()[:12]
-        if admin_key
-        else None
-    )
-
     return {
         "admin_api_key_configured": bool(
             admin_key
-        ),
-        "admin_api_key_length": len(
-            admin_key
-        ),
-        "admin_api_key_fingerprint": (
-            fingerprint
         ),
         "predict_rate_limit_requests": (
             RATE_LIMIT_REQUESTS

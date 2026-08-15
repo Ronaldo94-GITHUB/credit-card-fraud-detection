@@ -1,7 +1,6 @@
 from pathlib import Path
 
-import src.audit as audit
-import src.database as database
+from src import audit, database
 
 
 def test_audit_roundtrip(

@@ -6,11 +6,9 @@ from src.config import (
     FIGURES_DIR,
     TUNED_XGBOOST_MODEL_PATH,
 )
-
 from src.data_loader import (
     load_credit_card_data,
 )
-
 from src.preprocessing import (
     add_engineered_features,
     split_dataset,

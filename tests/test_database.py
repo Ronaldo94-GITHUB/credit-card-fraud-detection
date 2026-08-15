@@ -1,6 +1,6 @@
 ﻿from pathlib import Path
 
-import src.database as database
+from src import database
 
 
 def test_database_roundtrip(

@@ -1,11 +1,9 @@
 ﻿from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime
-from datetime import timezone
+from datetime import UTC, datetime
 
 from src.database import get_events_since
-
 
 PERIOD_CONFIG = {
     "24h": {
@@ -37,11 +35,11 @@ def _parse_datetime(
 
     if parsed.tzinfo is None:
         parsed = parsed.replace(
-            tzinfo=timezone.utc
+            tzinfo=UTC
         )
 
     return parsed.astimezone(
-        timezone.utc
+        UTC
     )
 
 

@@ -7,17 +7,27 @@ from src.config import (
     BEST_MODEL_PATH,
     TUNED_XGBOOST_MODEL_PATH,
 )
-
+from src.model_registry import (
+    resolve_active_model_path,
+)
 from src.preprocessing import (
     add_engineered_features,
 )
 
 
 def resolve_default_model_path() -> Path:
-    if TUNED_XGBOOST_MODEL_PATH.exists():
-        return TUNED_XGBOOST_MODEL_PATH
+    try:
+        return resolve_active_model_path()
 
-    return BEST_MODEL_PATH
+    except (
+        FileNotFoundError,
+        KeyError,
+        ValueError,
+    ):
+        if TUNED_XGBOOST_MODEL_PATH.exists():
+            return TUNED_XGBOOST_MODEL_PATH
+
+        return BEST_MODEL_PATH
 
 
 def load_model_bundle(

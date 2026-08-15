@@ -854,3 +854,13 @@ app.include_router(
     external_alerts_router
 )
 
+
+
+# FRAUD_OPERATIONS_PLATFORM
+from src.fraud_operations_api import (
+    router as fraud_operations_router,
+)
+
+app.include_router(
+    fraud_operations_router
+)

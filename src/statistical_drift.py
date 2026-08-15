@@ -1,15 +1,14 @@
 ﻿from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 
 from src.database import (
     get_events_since,
 )
-
 
 BASELINE_PATH = Path(
     "reports/drift_baseline.json"
@@ -247,6 +246,12 @@ def analyze_statistical_drift(
     sample_size = len(events)
 
     if sample_size < MINIMUM_SAMPLES:
+        missing_samples = max(
+            0,
+            MINIMUM_SAMPLES
+            - sample_size,
+        )
+
         return {
             "status": (
                 "insufficient_data"
@@ -256,6 +261,13 @@ def analyze_statistical_drift(
             "sample_size": sample_size,
             "minimum_samples": (
                 MINIMUM_SAMPLES
+            ),
+            "missing_samples": (
+                missing_samples
+            ),
+            "message": (
+                "Not enough production samples "
+                "to calculate statistical drift."
             ),
             "features_analyzed": 0,
             "warning_features": 0,

@@ -40,7 +40,10 @@ def external_alert_status() -> dict[str, Any]:
         "bearer_token_configured": bool(
             bearer_token
         ),
-        "provider": "generic_webhook_slack_compatible",
+        "provider": os.getenv(
+            "MLOPS_ALERT_PROVIDER",
+            "generic",
+        ).strip().lower(),
     }
 
 
@@ -123,8 +126,19 @@ def build_webhook_payload(
         "[Credit Card Fraud Detection] "
         f"MLOps alert ({severity.upper()}) "
         f"for period {period}. "
-        f"Dashboard: {source_url}/executive"
+        f"Dashboard: "
+        f"{source_url.rstrip('/')}/executive"
     )
+
+    provider = os.getenv(
+        "MLOPS_ALERT_PROVIDER",
+        "generic",
+    ).strip().lower()
+
+    if provider == "slack":
+        return {
+            "text": text,
+        }
 
     return {
         "text": text,

@@ -57,3 +57,6 @@ data/runtime_metrics.db
 
 # Runtime observability reports
 reports/runtime/
+
+# Feature contract registry required by CI/runtime
+!models/feature_registry.json

@@ -26,6 +26,11 @@ from src.database import (
 from src.drift import (
     calculate_drift_status,
 )
+from src.feature_store import (
+    FeatureContractError,
+    feature_contract_status,
+    validate_model_bundle,
+)
 from src.ground_truth import (
     get_ground_truth,
     initialize_ground_truth_table,
@@ -284,10 +289,18 @@ def health():
 
     db = database_status()
 
+    model_available = (
+        model_path.exists()
+    )
+
     return {
         "status": "healthy",
+        "service": (
+            "credit-card-fraud-detection"
+        ),
+        "api_version": "0.7.0",
         "model_available": (
-            model_path.exists()
+            model_available
         ),
         "database_available": (
             db["available"]
@@ -299,27 +312,33 @@ def health():
 @app.get("/readiness")
 def readiness():
     try:
-        bundle = load_model_bundle()
-
         db = database_status()
 
         if not db["available"]:
             raise HTTPException(
                 status_code=503,
-                detail=(
-                    "Database unavailable."
-                ),
+                detail="Database unavailable.",
             )
+
+        bundle = load_model_bundle()
+
+        validate_model_bundle(
+            bundle
+        )
+
+        features = (
+            feature_contract_status()
+        )
 
         return {
             "status": "ready",
-            "model_name": (
-                bundle["model_name"]
-            ),
+            "api_version": "0.7.0",
+            "model_name": bundle["model_name"],
             "threshold": float(
                 bundle["threshold"]
             ),
             "database": db,
+            "feature_contract": features,
             "reliability": {
                 "prediction_timeout_seconds": (
                     prediction_timeout_seconds()
@@ -334,6 +353,15 @@ def readiness():
         raise HTTPException(
             status_code=503,
             detail=str(exc),
+        ) from exc
+
+    except FeatureContractError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Model and feature contract "
+                "are incompatible."
+            ),
         ) from exc
 
 
@@ -363,6 +391,9 @@ def model_info():
                 bundle.get(
                     "cv_average_precision"
                 )
+            ),
+            "feature_contract": (
+                feature_contract_status()
             ),
         }
 

@@ -1,5 +1,10 @@
 # Credit Card Fraud Detection — Production ML/MLOps System
 
+[![Production CI](https://github.com/Ronaldo94-GITHUB/credit-card-fraud-detection/actions/workflows/python-ci.yml/badge.svg)](https://github.com/Ronaldo94-GITHUB/credit-card-fraud-detection/actions/workflows/python-ci.yml)
+[![Production Smoke](https://github.com/Ronaldo94-GITHUB/credit-card-fraud-detection/actions/workflows/production-smoke.yml/badge.svg)](https://github.com/Ronaldo94-GITHUB/credit-card-fraud-detection/actions/workflows/production-smoke.yml)
+[![Continuous Evaluation](https://github.com/Ronaldo94-GITHUB/credit-card-fraud-detection/actions/workflows/continuous-model-evaluation.yml/badge.svg)](https://github.com/Ronaldo94-GITHUB/credit-card-fraud-detection/actions/workflows/continuous-model-evaluation.yml)
+[![Feature Contract](https://github.com/Ronaldo94-GITHUB/credit-card-fraud-detection/actions/workflows/feature-contract.yml/badge.svg)](https://github.com/Ronaldo94-GITHUB/credit-card-fraud-detection/actions/workflows/feature-contract.yml)
+
 Sistema de detecção de fraudes em cartões de crédito que evoluiu de um modelo XGBoost para uma solução completa de Machine Learning em produção, cobrindo API, banco de dados, frontend, observabilidade, drift, governança de modelos, Ground Truth, retraining, explainability, segurança, performance e CI/CD.
 
 ## Live Demo
@@ -48,6 +53,32 @@ O modelo final é um XGBoost ajustado com RandomizedSearchCV e threshold selecio
 O modelo identificou 62 fraudes corretamente, com 15 falsos positivos e 12 falsos negativos no conjunto final de teste.
 
 **Best CV Average Precision:** `0.848916`
+
+## Fraud Operations Platform
+
+A solução também possui uma camada operacional antifraude, conectando o score do modelo a um fluxo real de investigação.
+
+Principais capacidades:
+
+- classificação por faixas de risco: low, medium, high e critical;
+- regras híbridas combinando ML e políticas de negócio;
+- fila de casos suspeitos;
+- revisão humana e Case Management;
+- confirmação de fraude e falso positivo;
+- Ground Truth associado às inferências;
+- métricas reais de Precision, Recall, F2 e False Positive Rate;
+- cálculo de exposição financeira suspeita e fraude confirmada;
+- elegibilidade governada para retraining.
+
+### Endpoints
+
+- `GET /fraud-operations/summary?period=7d`
+- `GET /fraud-operations/rules`
+- `GET /fraud-operations/cases`
+- `POST /fraud-operations/cases/{inference_event_id}/review`
+- `GET /fraud-operations/retraining/eligibility`
+- `POST /ground-truth`
+
 
 ## Production MLOps Architecture
 

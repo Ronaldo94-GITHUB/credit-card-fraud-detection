@@ -348,7 +348,7 @@ Este projeto foi desenvolvido como um case de **Machine Learning Engineering / M
 `Machine Learning` · `XGBoost` · `Python` · `FastAPI` · `PostgreSQL` · `React` · `Explainable AI` · `MLOps` · `Model Governance` · `Observability` · `Drift Detection` · `Security` · `Docker` · `CI/CD` · `Performance Engineering`
 
 ## Autor
-
+**Ronaldo Augusto Sabino**
 **Rogério Augusto Sabino**
 
 Projeto de portfólio focado em Machine Learning Engineering, MLOps e sistemas de IA em produção.

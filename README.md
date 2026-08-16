@@ -17,6 +17,10 @@ Sistema de detecção de fraudes em cartões de crédito que evoluiu de um model
 
 > Em instâncias gratuitas do Render, o primeiro acesso pode sofrer cold start.
 
+### Executive Dashboard Preview
+
+![Executive Fraud Operations Dashboard](assets/screenshots/executive-dashboard.png)
+
 ## Visão Geral
 
 O projeto trata um problema altamente desbalanceado de classificação binária. A solução foi estruturada para evitar depender apenas de accuracy e inclui seleção controlada de threshold, métricas adequadas ao problema, persistência de inferências, observabilidade e mecanismos de evolução segura do modelo.

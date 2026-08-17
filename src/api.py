@@ -873,3 +873,13 @@ from src.fraud_operations_level4_api import (
 app.include_router(
     fraud_operations_level4_router
 )
+
+
+# FRAUD_OPERATIONS_INTELLIGENCE
+from src.fraud_operations_intelligence_api import (
+    router as fraud_operations_intelligence_router,
+)
+
+app.include_router(
+    fraud_operations_intelligence_router
+)

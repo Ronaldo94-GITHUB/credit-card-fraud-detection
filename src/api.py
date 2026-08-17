@@ -864,3 +864,12 @@ from src.fraud_operations_api import (
 app.include_router(
     fraud_operations_router
 )
+
+# FRAUD_OPERATIONS_LEVEL4
+from src.fraud_operations_level4_api import (
+    router as fraud_operations_level4_router,
+)
+
+app.include_router(
+    fraud_operations_level4_router
+)

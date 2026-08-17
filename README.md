@@ -84,6 +84,36 @@ Principais capacidades:
 - `POST /ground-truth`
 
 
+## Fraud Operations Level 4
+
+A plataforma possui uma camada avançada de operação antifraude que conecta inferência, investigação humana, Ground Truth e governança.
+
+Principais capacidades:
+- adjudicação atômica entre Case Management e Ground Truth;
+- audit trail imutável;
+- policy versioning (fraud-ops-v2.0.0);
+- SLA operacional por risco;
+- priority score por probabilidade, valor e urgência;
+- atribuição de casos a analistas;
+- monitoramento de casos vencidos;
+- KPIs operacionais;
+- small-sample reliability guard;
+- integração com retraining governado.
+
+Reliability Gate:
+- mínimo de 100 labels;
+- mínimo de 20 positivos;
+- mínimo de 20 negativos.
+
+Endpoints Level 4:
+- GET /fraud-operations/policy
+- GET /fraud-operations/operational-cases
+- GET /fraud-operations/operations-kpis
+- POST /fraud-operations/cases/{inference_event_id}/adjudicate
+- GET /fraud-operations/cases/{inference_event_id}/history
+
+Documentação: docs/fraud-operations-level4.md
+
 ## Production MLOps Architecture
 
 ### Arquitetura
